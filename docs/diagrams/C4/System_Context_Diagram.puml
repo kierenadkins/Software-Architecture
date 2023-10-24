@@ -1,0 +1,28 @@
+@startuml "System Context"
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+SHOW_PERSON_OUTLINE()
+
+title <size:40> System Context Diagram
+Person(anonymousUser, Anonymous User, "An unauthorised client who has not yet gained access to the sy")
+Person(visaApplicant, Visa Applicant, "An user who intends to find information regarding visas and submit a visa application")
+Person(visaFacilitator, Visa Facilitator, "A user who is a special type of visa applicant who acts as a bridge between the applicants and visa processing system to produce bulk applications. ")
+Person(visaProcessor, Visa Processor, "A user who works for a branch and supports visa applications and reviews applications before submission to third party country")
+Person(supportSpecialist, Support Specialist , "A user who handles customer support and technical support to both customers of the system but also members of staff.")
+Person(branchManager, Branch Manager, "An user who has control over a local branch and the customer support working at the branch. With the ability to add visa processors")
+Person(admin, Admin, "A user who has control over user privileges and data. -adding more branches and branch managers to the system")
+System(processingSystem, "Visa Processing System", "Descriptions")
+System_Ext(globalVisaDataHubSystem, "Global Visa Data Hub System", "An external system that manages visa information from various countries. Providing real-time updates and handling visa applications to relevant countries ")
+
+
+Rel_D(anonymousUser, processingSystem, "Signs up/ logins to the system")
+Rel_D(visaApplicant, processingSystem, "Gets visa suggestions, up-to-date visa information, applies for visas and can book appointments")
+Rel_D(visaFacilitator, processingSystem, "Same as visa applicant, however can process a bulk visa application")
+Rel_D(visaProcessor, processingSystem, "Assesses applications and has the capability to request additional information, while also providing visibility into appointment scheduling")
+Rel_D(supportSpecialist, processingSystem, "Helps users of the system with technical or customer surport")
+Rel_D(branchManager, processingSystem, "Manages branch operations and staff")
+Rel_D(admin, processingSystem, "Manages Branches and Branch management.")
+Rel_D(processingSystem, globalVisaDataHubSystem, "Get Visa information and sends reviewed applications to the system to be directed to the correct country")
+
+SHOW_LEGEND() 
+@enduml
