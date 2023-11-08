@@ -1,0 +1,55 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+' uncomment the following line and comment the first to use locally
+' !include C4_Component.puml
+
+
+
+title Component diagram for Internet Banking System - API Application
+
+System_Ext(globalVisaDataHubSystem, "Global Visa Data Hub System", "An external system that manages visa information from various countries. Providing real-time updates and handling visa applications to relevant countries")
+
+Container_Boundary(frontend, "frontend") {
+    Container_Boundary(UI, "Browser") {
+
+    }
+    Container_Boundary(presentation, "Presentation") {
+        Component(Authentication, "Authentication", "JWT", "Uses JWT to check if devidde is authorised to access certain routes")
+    }
+}
+
+Container_Boundary(backend, "Backend Server Side") {
+    Container_Boundary(api, "Api Layer") {
+        Component(authApi, "Auth Controller", "Rest Controller", "Allow users to create accounts and login to the system")
+        Component(visaApi, "Visa Controller", "Rest Controller", "Allow users get sugestions for visas and find visa information via an external system")
+        Component(applicationApi, "Visa Application Controller", "Rest Controller", "Allow visa applicants to create their visa applications, submit, save & resume and include additional information to visa")
+        Component(appointmentApi, "Appointment Controller", "Rest Controller", "Allow visa applicants the ability to book an appointment and view appointment data")
+        Component(ticketApi, "ticket surport Controller", "Rest Controller", "Allow Visa applicants & visa officers the ability to create surport tickets")
+    }
+    Container_Boundary(application, "Application Layer") {
+         Component(registrationService, "registration service", "CQRS Service", "handles registation processors")
+         Component(loginService, "login service", "CQRS service", "allow users to sign into the application and applies security checks")
+    }
+
+    Container_Boundary(infrastructure, "infrastructure Layer") {
+
+    }
+
+    Container_Boundary(domain, "Domain Layer") {
+
+    }
+
+    Rel_D(authApi, registrationService, "Uses")
+    Rel_D(authApi, loginService, "Uses", "JSON tokens")
+}
+
+Rel_L(UI, presentation, "1. Loads")
+Rel_L(presentation, api, "2. make api calls")
+
+
+
+
+
+SHOW_LEGEND()
+
+@enduml

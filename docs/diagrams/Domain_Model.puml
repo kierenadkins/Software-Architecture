@@ -14,10 +14,6 @@ class VisaApplicant{
 
 }
 
-class VisaFacilitator{
-
-}
-
 class VisaProcessor{
 
 }
@@ -47,20 +43,17 @@ VisaProcessor --|> User : Extends
 BranchManager --|> User : Extends
 Admin --|> User : Extends
 SupportSpecalist--|> User : Extends
-VisaApplicant <|-- VisaFacilitator : Extends
 User *-- Role : "Has a"
 
 
 Admin --> BranchManager  : creates
 Admin --> Branch  : creates  
-Admin --> SupportSpecalist: creates 
+
 
 BranchManager --> VisaProcessor: Creates
+BranchManager --> SupportSpecalist: Creates
 
 class Appointment{
-Reason
-DateTime
-Branch Location
 }
 
 class Schedule{
@@ -70,14 +63,8 @@ class Schedule{
 Schedule "1" o-  "*" Appointment: "has"
 Appointment "*" *-- "1" VisaApplicant : "Books a"
 
-class BulkApplication{
-
-}
-
 class Application {
-submisson date
-last updated
-assigned
+
 }
 
 class Address{
@@ -105,6 +92,10 @@ class BiometricIdentification{
 
 }
 
+class Passport{
+
+}
+
 
 enum status{
 Pending
@@ -116,13 +107,17 @@ declined
 Application *-- status : "Has"
 Application "1"  *-- "1" PersonalDetails : "Has"
 Application "1" *-- "1" TravelDetails : "Has"
+Application "1"  *-- "*" Passport : "Has"
 Application "1"  *-- "*" Document : "Has"
 Application "1"  *-- "0..1" BiometricIdentification : "Could Have"
 Application "1" *-- "1" ApplicationChat : "Has"
 PersonalDetails "1" *-- "1" Address : "Has"
-Application "1..*" o-- BulkApplication : "submits"
-VisaFacilitator -- BulkApplication 
+
 class VisaSuggestion{
+
+}
+
+class FindVisa{
 
 }
 
@@ -141,18 +136,18 @@ class VisaEligibility {
 class VisaInformation {
 
 }
-
+VisaProcessor -- FindVisa: "uses"
+VisaApplicant -- FindVisa: "uses"
 VisaApplicant -- VisaSuggestion : "Requests"
 VisaApplicant "1"  -- "*" Application : "submits a"
 VisaSuggestion -- Visa : "gets"
+FindVisa -- Visa : "gets"
 Visa "1" *-- "1" VisaDocumentation : "Has"
 Visa "1" *-- "1" VisaEligibility : "Has"
 Visa "1" *-- "1" VisaInformation : "Has"
 
 class Branch{
-Reason
-DateTime
-Branch Location
+
 }
 
 class OpeningTimes{
@@ -174,18 +169,16 @@ Branch "1" *-- "1" OpeningTimes : "Has"
 OpeningTimes "1" *-- "7" Days : "Has"
 BranchManager "1" o-- "1" Branch : "Has a"
 
-VisaFacilitator -- VisaSuggestion
-VisaFacilitator "1" -- "*" Application : "submits a"
 VisaProcessor "0..1" -- "*" Application : "Reviews"
 VisaProcessor "1" --  "1" Schedule: "Views"
 
+class Ticket{
 
-package "Customer Surport Chat & Visa Application" #DDDDDD {
-  Conversation "1" -- "1..." Message
 }
 
-User "*" -- "1" Conversation : "get surport"
-SupportSpecalist "*" -- "1" Conversation : "Helps the user"
+VisaProcessor "*" -- "1" Ticket : "Creates"
+VisaApplicant "*" -- "1" Ticket : "Creates"
+SupportSpecalist "*" -- "1" Ticket : "Views and responds"
 
 note top of User: Users implements User interface
 
@@ -194,8 +187,6 @@ Visa.. N1
 N1 .. VisaSuggestion
 
 note left of Visa: Details from api
-
-note bottom of BulkApplication: Ability to apply for multiple visas at a time
 
 note bottom of Role: Contains all user roles
 @enduml

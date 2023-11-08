@@ -11,18 +11,17 @@ title <size:40> Container Diagram
 
 Person(anonymousUser, Anonymous User, "An unauthorized client who has not yet gained access to the system")
 Person(visaApplicant, Visa Applicant, "A user who intends to find information regarding visas and submit a visa application")
-Person(visaFacilitator, Visa Facilitator, "A user who is a special type of visa applicant who acts as a bridge between the applicants and the visa processing system to produce bulk applications.")
-Person(visaProcessor, Visa Processor, "A user who works for a branch and supports visa applications and reviews applications before submission to third-party countries")
-Person(supportSpecialist, Support Specialist, "A user who handles customer support and technical support to both customers of the system and members of staff.")
-Person(branchManager, Branch Manager, "A user who has control over a local branch and the customer support working at the branch. With the ability to add visa processors")
-Person(admin, Admin, "A user who has control over user privileges and data - adding more branches and branch managers to the system")
+Person(visaOfficer, Visa Processor, "A AFS employee who works for a branch and supports visa applications and reviews applications before submission to third-party countries")
+Person(supportSpecialist, Support Specialist, "A AFS employee who handles customer support and technical support to both customers of the system and members of staff.")
+Person(branchManager, Branch Manager, "A AFS employee who has control over a local branch and the customer support working at the branch. With the ability to add visa processors")
+Person(admin, Admin, "A AFS employee who has control over user privileges and data - adding more branches and branch managers to the system")
 
 System_Ext(globalVisaDataHubSystem, "Global Visa Data Hub System", "An external system that manages visa information from various countries. Providing real-time updates and handling visa applications to relevant countries")
 
 System_Boundary(c1, "Visa Application System") {
     Container(app, "Web Application", "Blazor", "The overall system including frontend and backend")
     Container(frontend, "Responsive FrontEnd", "Blazor", "Provides the frontend interface which is responsive for mobile and web")
-    Container(backend, "Backend Server Side", "C# Dotnet", "Provides business logic using services and API calls")
+    Container(backend, "Backend Server Side", "C# Dotnet", "Clean architecture using cqrs and rest api's, emphasizing separation of concerns and organizing code. Api layer, application layer, domain layer and infrastructure layer. ")
     ContainerDb(cosmos_db, "CosmosDb", , "Stores user accounts, visa applications, appointments, and branch data", $tags = "storage")
     ContainerDb(userContainer, "UserContainer", , "Data specific to users", $tags = "noSqlContainer")
     ContainerDb(branchContainer, "BranchContainer", , "Data specific to branch", $tags = "noSqlContainer")
@@ -30,16 +29,15 @@ System_Boundary(c1, "Visa Application System") {
     ContainerDb(applicationContainer, "ApplicationContainer", , "Data specific to application", $tags = "noSqlContainer")
 }
 
-Rel_D(anonymousUser, app, "Signs up/logins to the system", "HTTPS")
-Rel_D(visaApplicant, app, "Gets visa suggestions, up-to-date visa information, applies for visas, and can book appointments", "HTTPS")
-Rel_D(visaFacilitator, app, "Same as a visa applicant, however, can process a bulk visa application", "HTPS")
-Rel_D(visaProcessor, app, "Assesses applications and has the capability to request additional information, while also providing visibility into appointment scheduling", "HTTPS")
-Rel_D(supportSpecialist, app, "Helps users of the system with technical or customer support", "HTTPS")
-Rel_D(branchManager, app, "Manages branch operations and staff", "HTTPS")
-Rel_D(admin, app, "Manages user operations by creating new branch management and branches", "HTTPS")
+Rel_D(anonymousUser, app, "Signs up/ logins to the system")
+Rel_D(visaApplicant, app, "Requests visa suggestions, Finds & Views visa information, Create, View, Save & Resume visa applications, Schedule and view biometric appointments, Create and View Support Tickets")
+Rel_D(visaOfficer, app, "Reviews and validates visa applications, Requests Further Information For Applications, Manages Visa Applicant Appointments Assists with providing Biometric identification, Creates And Views Support Tickets")
+Rel_D(supportSpecialist, app, "Reviews and Replies To Support Tickets")
+Rel_D(branchManager, app, "Manages Branch Employees(VisaProcessors & SupportSpecialists), Assign Appointments To Visa Processors")
+Rel_D(admin, app, "Manages Branches, Manages Branch Management")
+Rel_D(app, globalVisaDataHubSystem, "Get Visa information and sends reviewed applications to the system to be directed to the correct country")
 
 Rel_R(app, frontend, "Delivers")
-Rel_L(app, backend, "Uses")
 Rel_L(backend, cosmos_db, "Gets and stores user accounts, visa applications, branch data, and meeting schedules")
 Rel_R(backend, globalVisaDataHubSystem, "Get Visa information and sends reviewed applications to the system to be directed to the correct country")
 Rel_D(frontend, backend, "Uses API calls and returns JSON")
