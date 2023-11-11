@@ -1,0 +1,85 @@
+@startuml
+
+title Visa Suggestion & View Suggestion US003/US004
+
+actor "Visa Applicant" as VisaApplicant
+
+box "Visa Processing System" #LightBlue
+    participant "Browser" as Browser
+    participant "Presentation Layer [Blazor]" as HomePage
+    participant "API Layer" as VisaController
+    participant "Application Layer" as SuggestionService
+    participant "Domain Layer" as Domain
+    participant "Infrastrucuture" as VisaIntegrationService
+    participant "Global Visa Data Hub External System" as External
+
+    VisaApplicant -> Browser: Load Application Page
+    activate Browser
+
+    Browser -> HomePage : Load Blazor Component
+    activate HomePage
+
+    HomePage --> VisaApplicant: Render Home-Page with suggestion wizzard
+
+VisaApplicant -> HomePage: VisaSuggestion(Destination, Travel, CountryOfOrgin)
+
+group information
+HomePage --> VisaApplicant : Render message informing user to enter all required information
+end
+
+HomePage -> VisaController : Call Visa Controller and pass suggestion data
+activate VisaController 
+
+VisaController -> SuggestionService : HandleSuggestionService(VisaSuggestion)
+activate SuggestionService
+
+
+SuggestionService -> Domain : ValidateSuggestion()
+activate Domain 
+
+group information
+Domain --> VisaApplicant : Validation Failied, return 400 code and inform the user why
+end
+
+Domain --> SuggestionService : Verifed Request
+Deactivate Domain
+
+SuggestionService -> VisaIntegrationService: VisaIntegrationService.GetSuggestion(VisaSuggestion)
+  activate VisaIntegrationService
+
+VisaIntegrationService -> External : Calls api and passes data 
+activate External
+
+group Error
+External --> VisaApplicant : 503 Service is not available, display error message
+end
+
+group Error
+External --> VisaApplicant : 404 could not find/generate suggestion based on data provided.
+end
+
+External --> VisaIntegrationService : returns json response
+deactivate External
+
+VisaIntegrationService --> SuggestionService : Map.VisaSuggestionDto(Response)
+deactivate VisaIntegrationService 
+
+SuggestionService --> VisaController : Return DTO
+deactivate SuggestionService
+
+VisaController --> HomePage : Return 200 with DTO in response Body
+deactivate VisaController 
+
+HomePage --> VisaApplicant: Render Visa Suggestion
+
+VisaApplicant -> HomePage: Click Eligibility Tab
+HomePage --> VisaApplicant: Render Eligibility Information
+
+VisaApplicant -> HomePage: Click Documentation Tab
+HomePage --> VisaApplicant: Render Documentation infromation
+deactivate VisaApplicant 
+deactivate HomePage
+deactivate Browser 
+end box
+
+@enduml

@@ -1,0 +1,135 @@
+@startuml
+
+title Find Countries Visas And Select To Find More Information UC005
+
+actor "Visa Applicant" as VisaApplicant
+
+box "Visa Processing System" #LightBlue
+    participant "Browser" as Browser
+    participant "Presentation Layer [Blazor]" as Presentation
+    participant "API Layer" as ApiLayer  
+    participant "Application Layer" as Application
+    participant "Domain Layer" as Domain
+    participant "Infrastructure" as Infrastructure  
+    participant "Global Visa Data Hub External System" as External
+
+    VisaApplicant -> Browser: Load Application Page
+    activate Browser
+
+    Browser -> Presentation: Load Blazor Component
+    activate Presentation
+
+    Presentation --> VisaApplicant: Render Home-Page
+
+    VisaApplicant -> Presentation: Click Find Visa option on navigation Blazor
+
+    Presentation --> VisaApplicant: Render Find Visa Page
+
+    VisaApplicant -> Presentation: FindCountryVisa(destination, orginCountry)
+
+    Presentation -> ApiLayer  : call API client to pass find visa data into the Visa Controller
+    activate ApiLayer  
+
+    ApiLayer   -> Application: Handle.FindCountryVisaService(FindVisa)
+    activate Application
+
+    Application -> Domain: ValidateFindCountryVisaRequest()
+    activate Domain 
+
+    group information
+    Domain --> VisaApplicant: Validation Failed, return 400 code and inform the user why
+    end
+
+    Domain --> Application: Verified Request
+    deactivate Domain
+
+    Application -> Infrastructure  : VisaIntegrationService.GetCountryVisas(FindCountrysVisa)
+    activate Infrastructure  
+
+    Infrastructure   -> External: Calls external API and passes data 
+    activate External
+
+    group Error
+    External --> VisaApplicant: 503 Service is not available, display error message
+    end
+
+    group Error
+    External --> VisaApplicant: 404 could not find/generate suggestion based on data provided.
+    end
+
+    External --> Infrastructure  : Returns JSON response
+    deactivate External
+
+    Infrastructure   --> Application: Map.VisasDto(Response)
+    deactivate Infrastructure   
+
+    Application --> ApiLayer  : Return DTO
+    deactivate Application
+
+    ApiLayer   --> Presentation: Return 200 with DTO in response Body
+    deactivate ApiLayer   
+
+    Presentation --> VisaApplicant: Render all visas for a particular country that are valid for orgin country.
+
+    VisaApplicant --> Presentation: Click View and call FindSpecificVisa(id)
+
+    Presentation -> ApiLayer  : call API client to pass FindSpecificVisa data into the Visa Controller 
+    activate ApiLayer  
+
+    ApiLayer   -> Application: Handle.FindSpecificVisaService(FindSpecificVisa)
+    activate Application
+
+    Application -> Domain: ValidateFindSpecificVisaRequest()
+    activate Domain 
+
+    group information
+    Domain --> VisaApplicant: Validation Failed, return 400 code and inform the user why
+    end
+
+    Domain --> Application: Verified Request
+    deactivate Domain
+
+    Application -> Infrastructure  : VisaIntegrationService.GetSpecificVisas(id)
+    activate Infrastructure  
+
+    Infrastructure   -> External: Calls external API and passes data 
+    activate External
+
+    group Error
+    External --> VisaApplicant: 503 Service is not available, display error message
+    end
+
+    group Error
+    External --> VisaApplicant: 404 could not find/generate suggestion based on data provided.
+    end
+
+    External --> Infrastructure  : Returns JSON response
+    deactivate External
+
+    Infrastructure   --> Application: Map.SpecificVisaDto(Response)
+    deactivate Infrastructure   
+
+    Application --> ApiLayer  : Return DTO
+    deactivate Application
+
+    ApiLayer   --> Presentation: Return 200 with DTO in response Body
+    deactivate ApiLayer   
+
+    Presentation --> VisaApplicant: Renders Specific Visa Overview
+    
+    note bottom
+    User has the following options when on this page "Visa Overview, Eligibility, Documentation and the option to apply"
+    end note
+
+    VisaApplicant -> Presentation: Click Eligibility Tab
+    Presentation --> VisaApplicant: Render Eligibility Information
+
+    VisaApplicant -> Presentation: Click Documentation Tab
+    Presentation --> VisaApplicant: Render Documentation information
+
+    deactivate VisaApplicant 
+    deactivate Presentation
+    deactivate Browser
+
+end box
+@enduml

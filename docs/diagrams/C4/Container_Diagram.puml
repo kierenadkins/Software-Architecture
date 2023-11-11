@@ -19,25 +19,22 @@ Person(admin, Admin, "A AFS employee who has control over user privileges and da
 System_Ext(globalVisaDataHubSystem, "Global Visa Data Hub System", "An external system that manages visa information from various countries. Providing real-time updates and handling visa applications to relevant countries")
 
 System_Boundary(c1, "Visa Application System") {
-    Container(app, "Web Application", "Blazor", "The overall system including frontend and backend")
-    Container(frontend, "Responsive FrontEnd", "Blazor", "Provides the frontend interface which is responsive for mobile and web")
-    Container(backend, "Backend Server Side", "C# Dotnet", "Clean architecture using cqrs and rest api's, emphasizing separation of concerns and organizing code. Api layer, application layer, domain layer and infrastructure layer. ")
-    ContainerDb(cosmos_db, "CosmosDb", , "Stores user accounts, visa applications, appointments, and branch data", $tags = "storage")
+    Container(frontend, "Responsive Frontend", "Blazor WebAssembly", "Delivers a low-latency and responsive experience for web and mobile users by running c# directly to the browser. Functioning even when there is no internet connection or under unreliable networks  ")
+    Container(backend, "Backend Server Side", "C#/Dotnet using clean architecture with cqrs and Open Rest Api's", "Delivers visa application functionality through secure JSON/HTTPS APIs, adhering to the principles of Clean Architecture with CQRS. It focuses on separating concerns and structuring code into API, Application, Infrastructure, and Domain layers to manage commands and queries effectively.")
+    ContainerDb(cosmos_db, "Database","Cosmos Db" , "A highly scalable, Avaliable and highly perforable database that will stores user accounts, visa applications, appointments, and branch data", $tags = "storage")
     ContainerDb(userContainer, "UserContainer", , "Data specific to users", $tags = "noSqlContainer")
     ContainerDb(branchContainer, "BranchContainer", , "Data specific to branch", $tags = "noSqlContainer")
     ContainerDb(appointmentContainer, "appointmentContainer", , "Data specific to appointments", $tags = "noSqlContainer")
     ContainerDb(applicationContainer, "ApplicationContainer", , "Data specific to application", $tags = "noSqlContainer")
 }
 
-Rel_D(anonymousUser, app, "Signs up/ logins to the system")
-Rel_D(visaApplicant, app, "Requests visa suggestions, Finds & Views visa information, Create, View, Save & Resume visa applications, Schedule and view biometric appointments, Create and View Support Tickets")
-Rel_D(visaOfficer, app, "Reviews and validates visa applications, Requests Further Information For Applications, Manages Visa Applicant Appointments Assists with providing Biometric identification, Creates And Views Support Tickets")
-Rel_D(supportSpecialist, app, "Reviews and Replies To Support Tickets")
-Rel_D(branchManager, app, "Manages Branch Employees(VisaProcessors & SupportSpecialists), Assign Appointments To Visa Processors")
-Rel_D(admin, app, "Manages Branches, Manages Branch Management")
-Rel_D(app, globalVisaDataHubSystem, "Get Visa information and sends reviewed applications to the system to be directed to the correct country")
+Rel_D(anonymousUser, frontend, "Signs up/ logins to the system")
+Rel_D(visaApplicant, frontend, "Requests visa suggestions, Finds & Views visa information, Create, View, Save & Resume visa applications, Schedule and view biometric appointments, Create and View Support Tickets")
+Rel_D(visaOfficer, frontend, "Reviews and validates visa applications, Requests Further Information For Applications, Manages Visa Applicant Appointments Assists with providing Biometric identification, Creates And Views Support Tickets")
+Rel_D(supportSpecialist, frontend, "Reviews and Replies To Support Tickets")
+Rel_D(branchManager, frontend, "Manages Branch Employees(VisaProcessors & SupportSpecialists), Assign Appointments To Visa Processors")
+Rel_D(admin, frontend, "Manages Branches, Manages Branch Management")
 
-Rel_R(app, frontend, "Delivers")
 Rel_L(backend, cosmos_db, "Gets and stores user accounts, visa applications, branch data, and meeting schedules")
 Rel_R(backend, globalVisaDataHubSystem, "Get Visa information and sends reviewed applications to the system to be directed to the correct country")
 Rel_D(frontend, backend, "Uses API calls and returns JSON")
@@ -47,5 +44,8 @@ Rel_D(cosmos_db, userContainer ,"holds user data and credentials")
 Rel_D(cosmos_db, branchContainer ,"holds branch data")
 Rel_D(cosmos_db, appointmentContainer , "holds appointment data")
 Rel_D(cosmos_db, applicationContainer , "holds application data")
-SHOW_LEGEND()
+
+note left of "frontend" : The Frontend solves many of the non-functional/usability requirements that are required. Blazor applications are have high performance due to reduced latency issues and can work offline by using browser cache, it is highly scalable to handle additional users and offers support of creating accessiblity requirements. Accessibility requirements will be added in this container such as Accessible language (UP002), Colour-Blind Friendly (UP003), OpenDyslxia (UP006) and text-to-speach (UP007) which are some that have been identified.  
+note left of "backend" : The Backend aims to solve the functional requirements while also addressing the non-functional requirements. The functional requirements will be distributed accross distrint layers, with business logic encapsulated with usecases and entities. Clean architecture with its separation of concerns will help enhance security, CQRS can help support scalability by being able to scale each part and with well designed Rest-Apis this should contribute to performance.
+note right of "cosmos_db" : You can find more information relating the decision to use cosmos_db in /docs/decisions/0006-NoSql-For-Data-Storage
 @enduml
