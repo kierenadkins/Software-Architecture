@@ -1,0 +1,58 @@
+@startuml
+
+actor User
+participant Browser as UI
+participant Presentation
+participant Authentication
+participant ApiClient
+participant VisaController
+participant SuggestionService
+participant VisaIntegrationService
+database "Global Visa Data Hub System" as VisaDataHub
+
+User -> UI: Open Browser
+activate UI
+
+UI -> Presentation: Render Blazor Components
+activate Presentation
+
+Presentation -> Authentication: JWT
+activate Authentication
+
+Authentication -> ApiClient: Connect to API endpoints
+activate ApiClient
+
+ApiClient -> VisaController: Send Requests
+activate VisaController
+
+VisaController -> SuggestionService: Calls Suggestion Service
+activate SuggestionService
+
+SuggestionService -> VisaIntegrationService: GetVisaSuggestion
+activate VisaIntegrationService
+
+VisaIntegrationService -> VisaDataHub: Get Visa information
+activate VisaDataHub
+
+VisaDataHub --> VisaIntegrationService: Visa information
+deactivate VisaDataHub
+
+VisaIntegrationService --> SuggestionService: Visa suggestion
+deactivate VisaIntegrationService
+
+SuggestionService --> ApiClient: Suggestion data
+deactivate SuggestionService
+
+ApiClient --> Authentication: API Response
+deactivate ApiClient
+
+Authentication --> Presentation: Authorized
+deactivate Authentication
+
+Presentation --> UI: Display Visa Suggestions
+deactivate Presentation
+
+UI --> User: Show Visa Suggestions
+deactivate UI
+
+@enduml
