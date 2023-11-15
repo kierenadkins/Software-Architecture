@@ -2,11 +2,12 @@ using ApplicationLayer.Commands.Users;
 using ApplicationLayer.Commands.Users.HandlerServices;
 using ApplicationLayer.Requests.Users;
 using ApplicationLayer.Requests.Users.HandleServices;
-using DomainLayer.Contracts.Applications;
 using DomainLayer.Contracts.Infrastructure;
 using DomainLayer.Factory.UserFactory;
+using DomainLayer.Objects.Visas;
 using InfrastructureLayer.Documents.UserDocuments;
 using InfrastructureLayer.Mappers.Users;
+using InfrastructureLayer.Mappers.Visas;
 using InfrastructureLayer.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -67,6 +68,20 @@ builder.Services
         options.ContainerPerItemType = builder.Configuration.GetValue<bool>("ContainerPerItemType");
     });
 
+builder.Services
+    .AddCosmosRepository(options =>
+    {
+        options.DatabaseId = "NoSqlDatabase";
+        options.CosmosConnectionString = "AccountEndpoint=https://kierendatabase.documents.azure.com:443/;AccountKey=ttHoEsXeA3NIfsgGSTwKUTBCoQppAstDYDsYoHjXiolsKf3fxeOYr9zJrlxHVTduXjq2YfsW2CgAACDbyZMi7Q==";
+        options.ContainerId = "Visa";
+        options.ContainerBuilder.Configure<VisaDocument>(containerOptions =>
+        {
+            containerOptions.WithPartitionKey(partitionKey);
+        });
+        options.IsAutoResourceCreationIfNotExistsEnabled = true;
+        options.ContainerPerItemType = builder.Configuration.GetValue<bool>("ContainerPerItemType");
+    });
+
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -85,11 +100,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 });
 builder.Services.AddControllers();
 builder.Services
-    .AddSingleton<IPasswordService, PasswordProtectionService>()
     .AddSingleton<IUserFactory, UserFactory>()
     .AddSingleton<ICommandHandler<UserRegistration>, UserRegistrationService>()
     .AddSingleton<IQueryHandler<UserLogin, string>, UserLoginService>()
-     .AddSingleton<IUserMapper, UserMapper>()
+    .AddSingleton<IQueryHandler<VisaSuggestion, IVisa>, VisaSuggestionServiceHandler>()
+    .AddSingleton<IUserMapper, UserMapper>()
+    .AddSingleton<IVisaMapper, VisaMapper>()
+    .AddSingleton<IVisaIntegrationService, VisaIntegrationService>()
+    .AddSingleton<IVisaFactory, VisaFactory>()
     .AddSingleton<IUsersRepository, UsersRepository>();
     
 

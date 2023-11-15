@@ -1,5 +1,4 @@
-﻿using DomainLayer.Contracts.Applications;
-using DomainLayer.Contracts.Infrastructure;
+﻿using DomainLayer.Contracts.Infrastructure;
 using DomainLayer.Enums.UserEnum;
 using DomainLayer.Factory.UserFactory;
 using DomainLayer.Objects.Users;
@@ -16,14 +15,11 @@ namespace ApplicationLayer.Commands.Users.HandlerServices
     {
         private readonly IUserFactory _userFactory;
         private readonly IUsersRepository _userRepository;
-        private readonly IPasswordService _passwordService;
         public UserRegistrationService(IUserFactory userFactory,
-            IUsersRepository userRepository,
-            IPasswordService passwordService)
+            IUsersRepository userRepository)
         {
             _userFactory = userFactory;
             _userRepository = userRepository;
-            _passwordService = passwordService;
         }
         public async Task HandleAsync(UserRegistration command, CancellationToken cancellationToken = default)
         {

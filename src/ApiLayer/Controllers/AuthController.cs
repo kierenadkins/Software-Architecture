@@ -21,7 +21,7 @@ namespace Api.Controllers
             _loginUser = loginUser;
         }
 
-        [Authorize(Roles = "VisaApplicantjnjbhv")]
+        [Authorize(Roles = "VisaApplicant")]
         [HttpPost("register")]
         public async Task<IActionResult> RegisterMember([FromBody] UserRegistration command)
         {
@@ -29,7 +29,7 @@ namespace Api.Controllers
             {
 
                 await _createAccount.HandleAsync(command);
-                return new OkObjectResult("Register is successful");
+                return new OkObjectResult("You can now log into the system");
 
             }
             catch (Exception ex)
