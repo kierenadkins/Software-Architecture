@@ -26,10 +26,10 @@ namespace ApplicationLayer.Requests.Users.HandleServices
             _visaFactory = visaFactory;
         }
 
-        public Task<IVisa> HandleAsync(VisaSuggestion query, CancellationToken cancellationToken = default)
+        public async Task<IVisa> HandleAsync(VisaSuggestion query, CancellationToken cancellationToken = default)
         {
-            var suggestion = _visaInterationService.GetSuggestion(query.destination, query.reason, query.countryOfOrgin);
-
+            var suggestion = await _visaInterationService.GetSuggestion(query.destination, query.reason, query.countryOfOrgin);
+            
             if (suggestion is null) 
             {
                 throw new ArgumentNullException("There was no suggestion found");

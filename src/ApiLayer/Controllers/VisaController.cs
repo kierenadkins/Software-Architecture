@@ -27,7 +27,7 @@ namespace ApiLayer.Controllers
             {
 
                 var suggestion = await _VisaSuggestion.HandleAsync(command);
-                return new OkObjectResult(suggestion);
+                return new OkObjectResult(suggestion.Country.Value);
 
             }
             catch (Exception ex)

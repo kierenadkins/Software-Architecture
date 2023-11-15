@@ -11,7 +11,7 @@ namespace DomainLayer.Contracts.Infrastructure
 {
     public interface IVisaIntegrationService
     {
-        Task<IVisa> GetSuggestion(string destination,string reason,string countryOfOrgin);
+        Task<IVisa?> GetSuggestion(string destination,string reason, string countryOfOrgin);
         Task<ICountryVisas> FindCountriesVisas (string country);
         Task<IVisa> GetVisa(string id);
 
