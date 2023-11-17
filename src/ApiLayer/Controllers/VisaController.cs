@@ -16,11 +16,15 @@ namespace ApiLayer.Controllers
     {
         private readonly IQueryHandler<VisaSuggestion, IVisa> _VisaSuggestion;
         private readonly IQueryHandler<GetCountriesVisas, ICountryVisas> _CountryVisas;
+        private readonly IQueryHandler<GetVisa, IVisa> _GetVisa;
 
-        public VisaController(IQueryHandler<VisaSuggestion, IVisa> visaSuggestion, IQueryHandler<GetCountriesVisas, ICountryVisas> countryVisas)
+        public VisaController(IQueryHandler<VisaSuggestion, IVisa> visaSuggestion,
+            IQueryHandler<GetCountriesVisas, ICountryVisas> countryVisas,
+            IQueryHandler<GetVisa, IVisa> getVisa)
         {
             _VisaSuggestion = visaSuggestion;
             _CountryVisas = countryVisas;
+            _GetVisa = getVisa;
         }
 
         [Authorize(Roles = "VisaApplicant")]
@@ -41,14 +45,31 @@ namespace ApiLayer.Controllers
             }
         }
 
-        [HttpPost("Country/Visas")]
+        [HttpPost("FindAllForCountry")]
         public async Task<IActionResult> GetCountryVisas([FromBody] GetCountriesVisas command)
         {
             try
             {
 
                 var visas = await _CountryVisas.HandleAsync(command);
-                return new OkObjectResult(visas.GetVisa("Student"));
+                return new OkObjectResult(visas);
+
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+                //return _handler.Handle(ex);
+            }
+        }
+
+        [HttpPost("FindVisa")]
+        public async Task<IActionResult> GetVisa([FromBody] GetVisa command)
+        {
+            try
+            {
+
+                var visas = await _GetVisa.HandleAsync(command);
+                return new OkObjectResult(visas);
 
             }
             catch (Exception ex)

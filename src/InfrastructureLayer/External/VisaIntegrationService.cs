@@ -60,9 +60,19 @@ namespace InfrastructureLayer.Repository
             return _visaMapper.ToVisaModel(suggestion)  ;
         }
 
-        public Task<IVisa> GetVisa(string id)
+        public async Task<IVisa?> GetVisa(string id)
         {
-            throw new NotImplementedException();
+            var suggestion = await _visaRepo
+                    .GetAsync(x => x.PartitionKey == id)
+                    .FirstOrDefaultAsync();
+
+
+            if (suggestion is null)
+            {
+                return null;
+            }
+
+            return _visaMapper.ToVisaModel(suggestion);
         }
 
         public async Task SAVE(IVisa visa)
