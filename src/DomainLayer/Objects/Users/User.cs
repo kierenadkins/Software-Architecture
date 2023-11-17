@@ -68,11 +68,11 @@ namespace DomainLayer.Objects.Users
 
         public bool DoesPasswordMatch(string enteredPassword)
         {
-            return CompareHashedPasswords(enteredPassword, Password.Value, Salt);
+            return CompareHashedPasswords(enteredPassword, Salt);
 
         }
 
-        public void EncryptPassword() 
+        public void HashPassword() 
         {
             ProtectPassword();
         }
@@ -104,15 +104,14 @@ namespace DomainLayer.Objects.Users
             byte[] hashedPassword = GetHash(password, randomlyGenerateSalt);
             string hashedBase64Password = Convert.ToBase64String(hashedPassword);
             Salt = randomlyGenerateSalt;
-            Password = hashedBase64Password;
+            Password.Value = hashedBase64Password;
         }
 
         private bool CompareHashedPasswords(string userInputPassword,
-            string existingHashedBase64StringPassword,
             string salt)
         {
             string usersInputtedHashedPassword = Convert.ToBase64String(GetHash(userInputPassword, salt));
-            return existingHashedBase64StringPassword == usersInputtedHashedPassword;
+            return Password == usersInputtedHashedPassword;
         }
         private void PasswordSecurity(string password)
         {

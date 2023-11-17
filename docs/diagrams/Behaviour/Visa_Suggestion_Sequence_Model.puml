@@ -6,48 +6,47 @@ actor "Visa Applicant" as VisaApplicant
 
 box "Visa Processing System" #LightBlue
     participant "Browser" as Browser
-    participant "Presentation Layer [Blazor]" as HomePage
-    participant "API Layer" as VisaController
-    participant "Application Layer" as SuggestionService
+    participant "Presentation Layer [Blazor]" as Presentation
+    participant "API Layer" as ApiLayer
+    participant "Application Layer" as Application
     participant "Domain Layer" as Domain
-    participant "Infrastrucuture" as VisaIntegrationService
+    participant "Infrastructure" as Infrastructure
     participant "Global Visa Data Hub External System" as External
 
     VisaApplicant -> Browser: Load Application Page
     activate Browser
 
-    Browser -> HomePage : Load Blazor Component
-    activate HomePage
+    Browser -> Presentation : Load Blazor Component
+    activate Presentation
 
-    HomePage --> VisaApplicant: Render Home-Page with suggestion wizzard
+    Presentation --> VisaApplicant: [user.Identity.IsAuthenticated & UserRole = "Visa Applicant"] Render Home-Page with suggestion wizzard
 
-VisaApplicant -> HomePage: VisaSuggestion(Destination, Travel, CountryOfOrgin)
+VisaApplicant -> Presentation: VisaSuggestion(Destination, Travel, CountryOfOrgin)
 
 group information
-HomePage --> VisaApplicant : Render message informing user to enter all required information
+Presentation --> VisaApplicant : Render message informing user to enter all required information
 end
 
-HomePage -> VisaController : Call Visa Controller and pass suggestion data
-activate VisaController 
+Presentation -> ApiLayer : [UserRole = "Visa Applicant"] Call Visa Controller and pass suggestion data
+activate ApiLayer 
 
-VisaController -> SuggestionService : HandleSuggestionService(VisaSuggestion)
-activate SuggestionService
+ApiLayer -> Application : Handle.SuggestionService(VisaSuggestion)
+activate Application
 
-
-SuggestionService -> Domain : ValidateSuggestion()
+Application -> Domain : ValidateSuggestion()
 activate Domain 
 
 group information
 Domain --> VisaApplicant : Validation Failied, return 400 code and inform the user why
 end
 
-Domain --> SuggestionService : Verifed Request
+Domain --> Application : Verifed Request
 Deactivate Domain
 
-SuggestionService -> VisaIntegrationService: VisaIntegrationService.GetSuggestion(VisaSuggestion)
-  activate VisaIntegrationService
+Application -> Infrastructure: VisaIntegrationService.GetSuggestion(VisaSuggestion)
+  activate Infrastructure
 
-VisaIntegrationService -> External : Calls api and passes data 
+Infrastructure -> External : Calls external api and passes data 
 activate External
 
 group Error
@@ -58,27 +57,35 @@ group Error
 External --> VisaApplicant : 404 could not find/generate suggestion based on data provided.
 end
 
-External --> VisaIntegrationService : returns json response
+External --> Infrastructure : returns json response
 deactivate External
 
-VisaIntegrationService --> SuggestionService : Map.VisaSuggestionDto(Response)
-deactivate VisaIntegrationService 
+Infrastructure --> Domain : Map to Visa Domain Model - Map.VisaSuggestion(Response)
+activate Domain
 
-SuggestionService --> VisaController : Return DTO
-deactivate SuggestionService
+Domain --> Infrastructure : Return Visa Domain Model
+deactivate Domain
 
-VisaController --> HomePage : Return 200 with DTO in response Body
-deactivate VisaController 
+Infrastructure --> Application : return Visa 
+deactivate Infrastructure 
 
-HomePage --> VisaApplicant: Render Visa Suggestion
+Application --> ApiLayer : return Visa 
+deactivate Application
 
-VisaApplicant -> HomePage: Click Eligibility Tab
-HomePage --> VisaApplicant: Render Eligibility Information
+ApiLayer --> Presentation : Return 200 with Visa in response Body
+deactivate ApiLayer 
 
-VisaApplicant -> HomePage: Click Documentation Tab
-HomePage --> VisaApplicant: Render Documentation infromation
+Presentation --> VisaApplicant: Render Visa Suggestion
+note bottom
+    User has the following options when on this page "Visa Overview, Eligibility, Documentation and the option to apply for a application"
+end note
+VisaApplicant -> Presentation: Click Eligibility Tab
+Presentation --> VisaApplicant: Render Eligibility Information
+
+VisaApplicant -> Presentation: Click Documentation Tab
+Presentation --> VisaApplicant: Render Documentation infromation
 deactivate VisaApplicant 
-deactivate HomePage
+deactivate Presentation
 deactivate Browser 
 end box
 

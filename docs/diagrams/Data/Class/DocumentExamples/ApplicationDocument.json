@@ -1,53 +1,58 @@
+
 [
     {
-        "_applicationId": "some_id",
-        "userId": "some_user_id",
-        "visaId": "some_user_id",
-        "personaldetails": {
-          "questions": [
-            {
-              "question": "What is your name?",
-              "type": "Field",
-              "answer": "John Doe"
-            }
-          ],
-          "validateAllAnswered": true
-        },
-        "traveldetails": {
-          "questions": [
-            {
-              "question": "Where do you plan to travel?",
-              "type": "Field",
-              "answer": "Paris"
-            }
-          ],
-          "validateAllAnswered": true
-        },
-        "passportdetails": [
-            "questions": [
-                {
-                "questionText": "Which programming languages do you know?",
-                "type": "CheckBox",
-                "checkboxOptions": ["example", "example", "example", "example"],
-                "answer": "example"
-                }
-            ],
-          "validateAllAnswered": true
-        },
-        "documentationdetails": {
-          "documentation": [
-            {
-              "documentation": "Proof of address",
-              "docName": "proof_of_address.pdf",
-              "docData": "base64_encoded_data"
-            }
-          ],
-          "validateDocumentationIsSubmitted": true
-        },
-        "biometricidentification": null, 
-        "status": "Submitted",
-        "biometricRequired": true,
-        "biometricCompleted": false
-      }
-      
-]
+        "//": "As you can see from below, these could be very diffrent depending on each visa"
+    },
+    
+    {
+      "_applicationId": "some_id",
+      "userId": "some_user_id",
+      "visaId": "some_visa_id",
+      "personaldetails": {
+        "questions": [
+          {
+            "question": "What is your name?",
+            "type": "Field",
+            "answer": "John Doe"
+          }
+        ],
+        "validateAllAnswered": true
+      },
+      "traveldetails": {
+        "questions": [
+          {
+            "question": "Where do you plan to travel?",
+            "type": "Field",
+            "answer": "Paris"
+          }
+        ],
+        "validateAllAnswered": true
+      },
+      "passportdetails": {
+        "questions": [
+          {
+            "questionText": "Which programming languages do you know?",
+            "type": "CheckBox",
+            "checkboxOptions": ["example1", "example2", "example3", "example4"],
+            "answer": ["example1", "example2"]
+          }
+        ],
+        "validateAllAnswered": true
+      },
+      "documentationdetails": {
+        "documentation": [
+          {
+            "documentation": "Proof of address",
+            "docName": "proof_of_address.pdf",
+            "docData": "base64_encoded_data"
+          }
+        ],
+        "validateDocumentationIsSubmitted": true
+      },
+      "biometricidentification": null,
+      "status": "Submitted",
+      "biometricRequired": true,
+      "biometricCompleted": false
+    }
+  ]
+  

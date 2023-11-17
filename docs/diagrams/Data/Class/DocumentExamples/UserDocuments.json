@@ -1,15 +1,4 @@
-{
-    "_id": "some_unique_id",
-    "firstName": "John",
-    "lastName": "Doe",
-    "email": "john.doe@example.com",
-    "encryptedPassword": "hashed_password",
-    "hash": "user_hash",
-    "dob": "2002-01-15",
-    "accountActive": true,
-    "role": "BranchManager",
-    "branchId" : "some_unique_id"
-  }
+[
 
   {
     "_id": "some_unique_id",
@@ -20,9 +9,10 @@
     "hash": "user_hash",
     "dob": "2002-01-15",
     "accountActive": true,
-    "role": "VisaApplicant",
-  }
-
+    "role": "BranchManager", 
+    "branchId" : "some_unique_id" 
+  },
+  
   {
     "_id": "some_unique_id",
     "firstName": "John",
@@ -32,9 +22,19 @@
     "hash": "user_hash",
     "dob": "2002-01-15",
     "accountActive": true,
-    "role": "VisaOfficer",
-    "branchId" : "some_unique_id"
+    "role": "VisaApplicant"  
+  },
+  
+  {
+    "_id": "some_unique_id",
+    "firstName": "John",
+    "lastName": "Doe",
+    "email": "john.doe@example.com",
+    "encryptedPassword": "hashed_password",
+    "hash": "user_hash",
+    "dob": "2002-01-15",
+    "accountActive": true,
+    "role": "VisaOfficer", 
+    "branchId" : "some_unique_id"  
   }
-  
-  //The branch id would be included in the claim, to be used by the frontend
-  
+]

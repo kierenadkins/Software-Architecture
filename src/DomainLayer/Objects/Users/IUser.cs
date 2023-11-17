@@ -25,7 +25,7 @@ namespace DomainLayer.Objects.Users
         bool IsAdmin();
         bool IsBranchManager();
 
-        void EncryptPassword();
+        void HashPassword();
 
         bool DoesPasswordMatch(string enteredPassword);
     }

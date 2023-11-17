@@ -2,6 +2,7 @@
 title <size:60> "Class Diagram"
 caption <size:40> "Reduced scope model of the visa application system for the prototype, this does not include value objects, DTOs or Document classes. This can be used as the data model as we will map classes that are "
 interface User {
+    -Id: guid
     -firstName: string
     -lastName: string
     -email: string
@@ -21,8 +22,9 @@ interface User {
 note "Attributes will be their own independant value objects with validation inside" as note_user
 note_user --> User: Note for User
 
-note "This interface will be used for all users to inherit from, the general strucutre of this will be mapped 1-1 into a document for persistence" as note_user2
+note "For the purpose of the diagram we have seperate role classes that inherit from the interface, however it will simply be a user class that inherits from it, the general strucutre of this will be mapped 1-1 into a document for persistence" as note_user2
 note_user2 --> User: Note for User
+
 
 
 enum RoleEnum {
@@ -34,7 +36,7 @@ enum RoleEnum {
 }        
 
 class VisaApplicant {
-    applicantId: Guid
+    applicantId: Guidit
 }
 
 class VisaAgent {

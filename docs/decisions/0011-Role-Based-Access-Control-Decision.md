@@ -1,44 +1,37 @@
 ---
-id: {0008}
+id: {0011}
 date: {13/11/2023}
 ---
-# Decision to archive data
+# Decision to use RBAC for authorization
 
 ## Context and Problem Statement
-One of our non-functional requirements is performance, and this is applicable to our database. with this in mind with the increasing usage of the main database and the accumulation of old data we must consider removing old data. We need to figure out a suitable time period in which to remove old data.
+Within the system we must allow certain users access to certain sensitive information. We need to ensure that users who have the right level of access can use certain functionallites of the system and access the correct api endpoints.
 
 ## Decision Drivers
 
-* Performance being impacted by unsustainable amounts of data
-* Database becoming to big
+* Security, ensuring only the correct users have access to senesitive data, to keep confidentiallity, intergrity and availability of data
+
+* Compliance, meeting data access and privacy regulations
 
 ## Considered Options
 
-* Archiving data after 3 years
-* Archiving data after 5 years
-* Archiving data after 10 years
-* No archiving of data
+* Role Based Access Control
+* Discretionary Access Control
+* Mandatory Access Control
 
 ## Decision Outcome
 
-Chosen option: "Archiving data after 10 years", because
+Chosen option: "Role Based Access Control", because
 
-The primary data to be stored within the database are visa applications. With this in mind we must consider that there may be some long term visas that can be valid for upto 10 years. BIQ has emphasized that the ability to extend visas can span "or 2, 5 or 10 years" however "that you are only allowed to stay a maximum of 6 months during any given year." (Breytenbachs Immigration Consultants Limited. 2023, October 30)
+I have chosen this as it is a very flexible, well known and scalable approach for managing access rights. This can be implemented on both the frontend routes and the api controllers. This will be reflected within the RBAC access control model.
 
-with this in mind, our goal is to balanace preserving visa information and perventing database from becoming unmaintainable and losing performance. therefore the decision to delete old data after 10 years will ensure that the systems performance is optimised.
+Id also like to note that the flexibility allows us to easiely intergrate with identity management systems like keycloak in the future if required.
 
 
 ### Consequences
 
-
-* Good because the database will not become unmaintainable
-
-* Good because the database will clear old data that we no longer need
-
-* bad because there may be cases where people may want to view old data.
-
-* bad because 10 years is along time for data to be sat around and not being used.
+* Good as it simplifies access management
+* Good allows for flexibility as the system grows
+* Bad, as it could become complex as my roles develop and the complexity of the roles.
 
 ## More Information
-
-Breytenbachs Immigration Consultants Limited. (2023, October 30). UK Visitor Visa - all your questions answered by our experts! Breytenbachs Immigration Consultants. https://www.bic-immigration.com/uk-immigration/visitor-visa/#:~:text=Length%20of%20Stay%20on%20the%20UK%20Visitor%20Visa&text=These%20visas%20are%20valid%20for,for%20up%20to%20eleven%20months.

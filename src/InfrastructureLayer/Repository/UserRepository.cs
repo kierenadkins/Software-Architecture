@@ -31,6 +31,7 @@ namespace InfrastructureLayer.Repository
 
         public async Task<bool> ExistsAsync(string email)
         {
+           
             var exists = await _userRepository.GetAsync(x => x.Email.Equals(email, StringComparison.InvariantCultureIgnoreCase));
             return exists.Any();
         }

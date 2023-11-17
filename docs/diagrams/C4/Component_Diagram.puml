@@ -1,68 +1,122 @@
 @startuml
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
-' uncomment the following line and comment the first to use locally
-' !include C4_Component.puml
 
+'Please note there is a png version of this diagram which was produced
+'In draw.io as this diagram looked very messy and i wasnt sure if the visual was important
+'this is within /diagrams/c4/Component.jpg
 
 
 title Component diagram for visa application system
-
+caption Component diagram illustating the visa applications system in more detail. This now shows the architecture that we are going to use within the system by splitting our containers into components. Components and thier interactions are visualized and demostrate the systems architecture and data flow. This level of detail is suitable for techinal people
+AddElementTag("storage", $shape=RoundedBoxShape(), $bgColor="lightSkyBlue", $fontColor="white")
 System_Ext(globalVisaDataHubSystem, "Global Visa Data Hub System", "An external system that manages visa information from various countries. Providing real-time updates and handling visa applications to relevant countries")
+ContainerDb(cosmos_db, "Database","Cosmos Db" , "A highly scalable, Avaliable and highly perforable database that will stores user accounts, visa applications, appointments, and branch data", $tags = "storage")
+
 
 Container_Boundary(frontend, "frontend") {
     Container_Boundary(UI, "Browser") {
-
     }
+
     Container_Boundary(presentation, "Presentation") {
-        Component(Authentication, "Authentication", "JWT", "Uses JWT to check if device is authorized to access certain routes")
-
+        Component(Authentication, "Authentication", "JWT", "Uses JWT to check if device is authenticated and role based authorized to access certain routes")
         Container_Boundary(routes, "Routes"){
-            
+             Component(loginRoute, "Login Route", "[Unauthorized]", "")
+             Component(signUpRoute, "Sign Up Route", "[Unauthorized]", "")
+             Component(suggestionRoute, "Suggestion Route", "[Visa Applicant]", "")
+             Component(findVisaRoute, "FindVisaRoute", "[Visa Applicant & Visa Office]", "")
+             Component(applicationRoute, "ApplicationRoute", "[Visa Applicant]", "")
+             Component(http, "HTTP Api client", "", "An API client in a Blazor application sends HTTP requests, handles responses, manages errors, and may handle authentication, authorization, caching, and abstraction for cleaner API interactions.")
+             Rel_D(loginRoute, http, "Sends Requests")
+             Rel_D(signUpRoute, http, "Sends Requests")
+             Rel_D(suggestionRoute, http, "Sends Requests")
+             Rel_D(findVisaRoute, http, "Sends Requests")
+             Rel_D(applicationRoute, http, "Sends Requests")
         }
-    }
+
+        Rel_D(Authentication, routes, "Connects to endpoints via routes that have endpoints")
+        Rel_D(loginRoute, Authentication, "When validated, JWT is passed back to allow for access to other routes")
+    }   
+
+    UI <-> presentation : "Render and display blazor components"
 }
 
 Container_Boundary(backend, "Backend Server Side") {
-    Container_Boundary(api, "Api Layer") {
-            Component(authApi, "Auth Controller", "Rest Controller", "Allow users to create accounts and login to the system")
-            Component(visaApi, "Visa Controller", "Rest Controller", "Allow users get sugestions for visas and find visa information via an external system")
-        Component(applicationApi, "Visa Application Controller", "Rest Controller", "Allow visa applicants to create their visa applications, submit, save & resume and include additional information to visa")
-       ' Component(appointmentApi, "Appointment Controller", "Rest Controller", "Allow visa applicants the ability to book an appointment and view appointment data")
-       ' Component(ticketApi, "ticket surport Controller", "Rest Controller", "Allow Visa applicants & visa officers the ability to create surport tickets")
-    }
-    Container_Boundary(application, "Application Layer") {
-         Component(registrationService, "registration service", "CQRS Service", "handles registation processors")
-         Component(loginService, "login service", "CQRS service", "allow users to sign into the application and applies security checks")
+
+Container_Boundary(api, "API Layer", ["Open Api"]) {
+ Component(authController, "Auth Controller", "[Rest Api]", "Allow users to create accounts and login to the system")
+ Component(visaController, "Visa Controller", "[Rest Api]", "Allow users get suggestions for visas and find visa information via an external system")
+ Component(applicationController, "Application Controller", "[Rest Api]", "Allow visa applicants to create their visa applications, submit, save & resume and include additional information to visa")
+}
+
+Container_Boundary(application, "Application Layer") {
+    Component(loginService, "Login Service", "CQRS", "Handles Login Logic")
+    Component(registrationService, "Registration Service", "CQRS", "Handles registration logic")
     
-        Component(suggestionService, "Suggestion service", "CQRS service", "allow visa applicant to get a visa suggestion from the system")
-        Component(findVisasService, "Find Visa's service", "CQRS service", "allow users to find all visas accossiated to a country")
-        Component(findVisaService, "Find Visa service", "CQRS service", "allow users to find information regarding a specfic type of visa")
-    }
+    Component(suggestionService, "Suggestion Service", "CQRS", "Retrieves a suggestion")
+    Component(findVisasService, "Find Visa's Service", "CQRS", "Finds all visas for country")
+    Component(findaVisaService, "Find A Visa Service", "CQRS", "Find a specific visa")
+    
+    Component(startApplicationService, "Start Application Service", "CQRS", "Gets Visa Application Template From External Client And Starts Application")
+    Component(submitApplicationService, "Submit Application Service", "CQRS", "Submits a application for in system reviewing")
+    Component(getApplicationsDetailsService, "Get Applications Details Service", "CQRS", "Get All Applications Details including status")
+    Component(saveApplicationService, "Save Application Service", "CQRS", "Save an application to finish later")
+    Component(resumeApplicationService, "Resume Application Service", "CQRS", "Resume an application that is unfinished")
+    Component(addAdditionalInformationService, "Add Additional Information Service", "CQRS", "Add a comment onto the application as additional information")
+    Component(viewApplicationService, "View Application Service", "CQRS", "View a specific application details in detail")
+}
 
-    Container_Boundary(infrastructure, "infrastructure Layer") {
-        Component(visaRepo, "Visa Repository", "", "handles interactions to the external visa application")
-        Component(userRepo, "User Repository", "", "handles interactions to the User database container") 
-        Component(applicationRepo, "Visa Application Repository", "", "handles interactions to the application database container")
-        'Component(appointmentRepo, "Appointment Repository", "", "handles interactions to the appointment database container")
-        'Component(ticketRepo, "Ticket Surport Repository", "", "handles interactions to the ticket surport database container")
-    }
+Container_Boundary(infrastructure, "Infrastrucutre Layer") {
+ Component(VisaIntergrationService, "Visa Integration Service", "", "Allow users get sugestions for visas and find visa information via an external system")
+ Component(userRepo, "User Repository", "", "handles interactions to the User database container for authentication and authorisation.")
+ Component(visaApplicationRepo, "Visa Application Repo", "", "handles interactions to the application database container")
 
-    Container_Boundary(domain, "Domain Layer") {
-
-    }
-
-    Rel_D(api, application, "3")
-    Rel_D(application, domain , "4")
 
 }
 
-Rel_D(UI, presentation, "1. Loads")
-Rel_D(presentation, api, "2. make api calls")
+Container_Boundary(domain, "Domain Layer") {
+}
+ 
+}
 
+note right of domain
+  This is explored further within the class diagram, this is represents our core
+  bussiness logic, containing factories, contracts and value objects
+end note
 
-Rel_L(visaRepo, globalVisaDataHubSystem, "Uses to get visa suggestions and information" )
+http <-> api : Communicate over HTTP calls and return JSON
+authController <-> loginService : "calls service and returns result"
+authController <-> registrationService : "calls service and returns result"
 
+visaController <-> suggestionService : "calls service and returns result"
+visaController <-> findVisasService : "calls service and returns result"
+visaController <-> findaVisaService : "calls service and returns result"
 
+applicationController <-> startApplicationService : "calls service and returns result"
+applicationController <-> submitApplicationService : "calls service and returns result"
+applicationController <-> getApplicationsDetailsService : "calls service and returns result"
+applicationController <-> saveApplicationService : "calls service and returns result"
+applicationController <-> resumeApplicationService : "calls service and returns result"
+applicationController <-> addAdditionalInformationService : "calls service and returns result"
+applicationController <-> viewApplicationService : "calls service and returns result"
+
+loginService <-> userRepo : "Calls Get User Function"
+registrationService <-> userRepo : "Calls Add User Function"
+
+suggestionService <-> VisaIntergrationService : "Calls GetSugestion Function and returns result"
+findVisasService <-> VisaIntergrationService : "Calls GetCountiresVisas Function and returns result"
+findaVisaService <-> VisaIntergrationService : "Calls GetVisas Function and returns result"
+startApplicationService <-> VisaIntergrationService : "Calls GetApplication Function and returns result"
+
+submitApplicationService <-> visaApplicationRepo : "Calls SubmitApplication Function"
+getApplicationsDetailsService <-> visaApplicationRepo : "Calls GetApplicationDetails Function and return list of application"
+saveApplicationService <-> visaApplicationRepo : "Calls SaveApplication Function"
+resumeApplicationService <-> visaApplicationRepo : "Calls ResumeApplication Function and return unfinished application"
+addAdditionalInformationService <-> visaApplicationRepo : "Calls SubmitAdditionalInformation Function"
+viewApplicationService <-> visaApplicationRepo : "Calls ViewApplication Function and return result"
+
+VisaIntergrationService <-> globalVisaDataHubSystem : "Get Visa information and application templates and sends reviewed applications to the system to be directed to the correct country"
+visaApplicationRepo <-> cosmos_db : "Read/write"
+userRepo <-> cosmos_db : "Read/write"
 
 SHOW_LEGEND()
 

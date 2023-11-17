@@ -11,6 +11,7 @@ using Microsoft.Azure.CosmosRepository.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -31,9 +32,16 @@ namespace InfrastructureLayer.Repository
             _visaMapper = visaMapper;
         }
 
-        public Task<ICountryVisas> FindCountriesVisas(string country)
+        public async Task<List<IVisa>?> FindCountriesVisas(string country, string countryOfOrgin)
         {
-            throw new NotImplementedException();
+            var visasdocsList = await _visaRepo.PageAsync(x => x.Country == country && x.ElgibilityRules.EligibleCountires.Contains(countryOfOrgin), pageSize: 10, continuationToken: null);
+
+            if (visasdocsList is null || visasdocsList.Items.Count == 0)
+            {
+                return null;
+            }
+
+            return visasdocsList.Items.Select(x => _visaMapper.ToVisaModel(x)).ToList();
         }
 
         public async Task<IVisa?> GetSuggestion(string country, string type, string countryOfOrgin)

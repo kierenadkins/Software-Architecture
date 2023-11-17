@@ -4,6 +4,7 @@
 SHOW_PERSON_OUTLINE()
 
 title <size:40> System Context Diagram
+caption "This system context diagram aims to provide a high level overview of the system. Show casing the users that use the system and the external systems that we use within the system. it serves as a valueable artifact to show to both technical and non-technical memebers"
 Person(anonymousUser, Anonymous User, "An unauthorised client who has not yet gained access to the sy")
 Person(visaApplicant, Visa Applicant, "An user who intends to find information regarding visas and submit a visa application")
 Person(visaOfficer, Visa Processor, "A user who works for a branch and supports visa applications and reviews applications before submission to third party country")
@@ -19,7 +20,7 @@ Rel_D(visaOfficer, processingSystem, "Reviews and validates visa applications, R
 Rel_D(supportSpecialist, processingSystem, "Reviews and Replies To Support Tickets")
 Rel_D(branchManager, processingSystem, "Manages Branch Employees(VisaProcessors & SupportSpecialists), Assign Appointments To Visa Processors")
 Rel_D(admin, processingSystem, "Manages Branches, Manages Branch Management")
-Rel_D(processingSystem, globalVisaDataHubSystem, "Get Visa information and sends reviewed applications to the system to be directed to the correct country")
+Rel_D(processingSystem, globalVisaDataHubSystem, "Get Visa information and sends reviewed applications to the system to be directed to the correct country via api's")
 
 SHOW_LEGEND() 
 @enduml

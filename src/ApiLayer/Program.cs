@@ -10,6 +10,7 @@ using InfrastructureLayer.Mappers.Users;
 using InfrastructureLayer.Mappers.Visas;
 using InfrastructureLayer.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Shared.Services.Commands.Abstract;
@@ -54,15 +55,19 @@ const string partitionKey = "/partitionKey";
 builder.Configuration.AddJsonFile("appsettings.json");
 builder.Services.AddMvc();
 
+
 builder.Services
     .AddCosmosRepository(options =>
     {
         options.DatabaseId = "NoSqlDatabase";
-        options.CosmosConnectionString = "AccountEndpoint=https://kierendatabase.documents.azure.com:443/;AccountKey=ttHoEsXeA3NIfsgGSTwKUTBCoQppAstDYDsYoHjXiolsKf3fxeOYr9zJrlxHVTduXjq2YfsW2CgAACDbyZMi7Q==";
-        options.ContainerId = container;
+        options.CosmosConnectionString = "AccountEndpoint=https://kierendatabase.documents.azure.com:443/;AccountKey=ttHoEsXeA3NIfsgGSTwKUTBCoQppAstDYDsYoHjXiolsKf3fxeOYr9zJrlxHVTduXjq2YfsW2CgAACDbyZMi7Q==;";
+
+        // Configure the "User" container
+        options.ContainerId = "Users";
         options.ContainerBuilder.Configure<UserDocument>(containerOptions =>
         {
-            containerOptions.WithPartitionKey(partitionKey);
+            containerOptions.WithContainer("User");
+            containerOptions.WithPartitionKey("/partitionKey");
         });
         options.IsAutoResourceCreationIfNotExistsEnabled = true;
         options.ContainerPerItemType = builder.Configuration.GetValue<bool>("ContainerPerItemType");
@@ -72,11 +77,14 @@ builder.Services
     .AddCosmosRepository(options =>
     {
         options.DatabaseId = "NoSqlDatabase";
-        options.CosmosConnectionString = "AccountEndpoint=https://kierendatabase.documents.azure.com:443/;AccountKey=ttHoEsXeA3NIfsgGSTwKUTBCoQppAstDYDsYoHjXiolsKf3fxeOYr9zJrlxHVTduXjq2YfsW2CgAACDbyZMi7Q==";
+        options.CosmosConnectionString = "AccountEndpoint=https://kierendatabase.documents.azure.com:443/;AccountKey=ttHoEsXeA3NIfsgGSTwKUTBCoQppAstDYDsYoHjXiolsKf3fxeOYr9zJrlxHVTduXjq2YfsW2CgAACDbyZMi7Q==;";
+
+        // Configure the "Visa" container
         options.ContainerId = "Visa";
         options.ContainerBuilder.Configure<VisaDocument>(containerOptions =>
         {
-            containerOptions.WithPartitionKey(partitionKey);
+            containerOptions.WithContainer("Visa");
+            containerOptions.WithPartitionKey("/partitionKey");
         });
         options.IsAutoResourceCreationIfNotExistsEnabled = true;
         options.ContainerPerItemType = builder.Configuration.GetValue<bool>("ContainerPerItemType");
@@ -104,10 +112,12 @@ builder.Services
     .AddSingleton<ICommandHandler<UserRegistration>, UserRegistrationService>()
     .AddSingleton<IQueryHandler<UserLogin, string>, UserLoginService>()
     .AddSingleton<IQueryHandler<VisaSuggestion, IVisa>, VisaSuggestionServiceHandler>()
+    .AddSingleton<IQueryHandler<GetCountriesVisas, ICountryVisas>, CountriesVisasServiceHandler>()
     .AddSingleton<IUserMapper, UserMapper>()
     .AddSingleton<IVisaMapper, VisaMapper>()
     .AddSingleton<IVisaIntegrationService, VisaIntegrationService>()
     .AddSingleton<IVisaFactory, VisaFactory>()
+    .AddSingleton<ICountryVisaFactory, CountryVisaFactory>()
     .AddSingleton<IUsersRepository, UsersRepository>();
     
 

@@ -1,0 +1,94 @@
+@startuml
+title <size:60> "Data Diagram"
+caption <size:40> "Documents that will be saved into the database, examples can be seen in DocumentExamples"
+
+class UserDocument {
+    -Id: guid
+    -firstName: string
+    -lastName: string
+    -email: string
+    -HashedPassword: string
+    -salt: string
+    -dob : Date
+    -accountActive: Bool
+    -role : string
+    branchId?: Guid
+}
+
+class ApplicationDocument {
+    UserDocumentId : Guid
+    ApplicationDocumentid : Guid
+    visaId:
+    personaldetailsDocument : personaldetailsDocument
+    traveldetailsDocument : traveldetailsDocument
+    documentation : Documentation
+    biometricidentifcation? : BiometricIdentication
+    status : StatusEnum
+    biometricRequired : Bool
+    biometricCompleted? : Bool
+}
+
+class personaldetailsDocument{
+    QuestionDocuments : List<QuestionDocument>
+
+    +ValidateAllAnswered: Bool
+}
+
+class traveldetailsDocument{
+    QuestionDocuments : List<QuestionDocument>
+    +ValidateAllAnswered: Bool
+}
+
+class PassportDetailsDocument{
+    QuestionDocuments : List<QuestionDocument>
+    +ValidateAllAnswered: Bool
+}
+
+class DocumentationDetailsDocument{
+    Documentation : List<DocumentationDataDocument>
+    +ValidateDocumentationIsSubmitted: Bool
+}
+
+
+class BiometricIdentificationDocument{
+
+}
+
+class AdditionalInformationDocument {
+
+}
+
+class QuestionDocument{
+    QuestionDocument : string
+    Type : string
+    CheckboxOptions? : list<String>
+    SelectOption? : List<string>
+    Answer: string
+}
+
+class DocumentationDataDocument{
+    Documnetation : string
+    docName: string
+    docData: Byte[] 
+}
+
+ApplicationDocument "1" *-- "1" personaldetailsDocument: Has
+ApplicationDocument "1" *-- "1" traveldetailsDocument: Has
+ApplicationDocument "1" *-- "1" PassportDetailsDocument: Has
+ApplicationDocument "1" *-- "1" DocumentationDetailsDocument: Has
+ApplicationDocument "1" *-- "1" BiometricIdentificationDocument: May Have (OUT OF SCOPE FOR PROTOTYPE)
+ApplicationDocument "1" *-- "1" AdditionalInformationDocument: May Have (OUT OF SCOPE FOR PROTOTYPE)
+
+personaldetailsDocument "1" *-- "*" QuestionDocument
+traveldetailsDocument "1" *-- "*" QuestionDocument
+PassportDetailsDocument "1" *-- "*" QuestionDocument
+DocumentationDetailsDocument "1" *-- "*" DocumentationDataDocument
+
+QuestionDocument --|> QuestionDocumentType: Uses 
+
+note "This class will be mapped 1 to 1 to a document for persistence in the database" as note_ApplicationDocument
+note_ApplicationDocument --> ApplicationDocument
+
+'Class Association
+ApplicationDocument --> UserDocument : has refrence to UserDocument for data integrity & access control
+@enduml

@@ -1,6 +1,6 @@
 @startuml
 
-title Find Countries Visas And Select To Find More Information UC005
+title Login To The Systsm UC001
 
 actor "Visa Applicant" as VisaApplicant
 
@@ -41,6 +41,12 @@ box "Visa Processing System" #LightBlue
     group Error
     External --> Infrastructure: 404 could not find user
     end
+
+    Infrastructure --> Domain  : Map into user domain object
+    activate Domain
+
+    Domain --> Infrastructure  : return user
+    deactivate Domain
 
     Infrastructure   --> Application: returns user to application layer
     deactivate Infrastructure   

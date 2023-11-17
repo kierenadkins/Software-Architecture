@@ -96,7 +96,7 @@ namespace ApplicationLayer.Commands.Users.HandlerServices
                 default: throw new NotImplementedException("User does not exist");
             }
 
-            user.EncryptPassword(); 
+            user.HashPassword(); 
             await _userRepository.AddAsync(user);
         }
     }

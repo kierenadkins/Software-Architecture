@@ -9,8 +9,8 @@ namespace DomainLayer.Objects.Visas
 {
     public interface ICountryVisas
     {
-        List<Visa> visas { get; init; }
+        List<IVisa> Visas { get; init; }
 
-        Visa GetVisa(string id);
+        public Visa GetVisa(string id);
     }
 }

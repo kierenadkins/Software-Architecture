@@ -1,10 +1,11 @@
 ---
-date: {13/10/2023}
+id: {0004}
+date: {20/10/2023}
 ---
 # Decision to use Markdown any decision record
 
 ## Context and Problem Statement
-In our software development proccess, i am exploring software to create high-fidelity wireframmes that can serve as a visual guideline of the design and flow of the system. I want to be able to export these wireframes as photos to easily send the wireframe over to clients. while also having the ability to interconnect the wireframs to demostrate how they flow together.
+In our software development proccess of planning, i am exploring software to create high-fidelity wireframmes that can serve as a visual guideline of the design and flow of the system. I want to be able to export these wireframes as photos to easily send the wireframe over to clients. while also having the ability to interconnect the wireframs to demostrate how they flow together.
 
 ## Decision Drivers
 

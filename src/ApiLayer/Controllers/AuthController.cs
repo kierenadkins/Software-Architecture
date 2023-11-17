@@ -21,13 +21,11 @@ namespace Api.Controllers
             _loginUser = loginUser;
         }
 
-        [Authorize(Roles = "VisaApplicant")]
         [HttpPost("register")]
         public async Task<IActionResult> RegisterMember([FromBody] UserRegistration command)
         {
-            try
-            {
-
+            try { 
+            
                 await _createAccount.HandleAsync(command);
                 return new OkObjectResult("You can now log into the system");
 

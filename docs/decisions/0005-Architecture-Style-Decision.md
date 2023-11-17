@@ -11,7 +11,7 @@ I have been tasked with building a visa processing system that will advise, guid
 
 * To ensure architecture aligns with project requirements
 * To ensure non-functional requirements are addressed.
-* Non-Functional requirements go in the following order. Scalability, Security, Availability, Performance, Usability, Accessibility. We want to meet as many of these as possible.
+* Non-Functional requirements go in the following order. Scalability, Security, Availability, Performance, Usability, Accessibility.
 
 ## Considered Options
 

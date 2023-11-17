@@ -3,7 +3,7 @@ id: {0006}
 date: {11/05/2023}
 ---
 
-# Decision to Use NoSQL for Data Store
+# Decision to Use Sequence Diagrams For System Behaviour
 
 ## Context and Problem Statement
 As part of my system design, I wanted to model and understand how different components/layers within the system interact with each other. This decision will explore a few considered options for behavior diagrams

@@ -13,13 +13,13 @@ box "Visa Processing System" #LightBlue
     participant "Infrastructure" as Infrastructure  
     participant "Global Visa Data Hub External System" as External
 
-    VisaApplicant -> Browser: Load Application Page
+    VisaApplicant -> Browser: ("Already Signed in) Load Application Page
     activate Browser
 
     Browser -> Presentation: Load Blazor Component
     activate Presentation
 
-    Presentation --> VisaApplicant: Render Home-Page
+    Presentation --> VisaApplicant: [user.Identity.IsAuthenticated & UserRole = "Visa Applicant"] Render Home-Page
 
     VisaApplicant -> Presentation: Click Find Visa option on navigation Blazor
 
@@ -27,7 +27,7 @@ box "Visa Processing System" #LightBlue
 
     VisaApplicant -> Presentation: FindCountryVisa(destination, orginCountry)
 
-    Presentation -> ApiLayer  : call API client to pass find visa data into the Visa Controller
+    Presentation -> ApiLayer  : [UserRole = "Visa Applicant"] call API client to pass find visa data into the Visa Controller
     activate ApiLayer  
 
     ApiLayer   -> Application: Handle.FindCountryVisaService(FindVisa)
@@ -60,20 +60,26 @@ box "Visa Processing System" #LightBlue
     External --> Infrastructure  : Returns JSON response
     deactivate External
 
-    Infrastructure   --> Application: Map.VisasDto(Response)
+    Infrastructure --> Domain: Map.CountriesVisas(Response)
+    activate Domain
+    Domain --> Infrastructure: Pass back CountriesVisa object
+    deactivate Domain
+
+    Infrastructure --> Application: Return CountriesVisa
+
     deactivate Infrastructure   
 
-    Application --> ApiLayer  : Return DTO
+    Application --> ApiLayer  : Return CountriesVisa
     deactivate Application
 
-    ApiLayer   --> Presentation: Return 200 with DTO in response Body
+    ApiLayer   --> Presentation: Return 200 with CountriesVisa in response Body
     deactivate ApiLayer   
 
     Presentation --> VisaApplicant: Render all visas for a particular country that are valid for orgin country.
 
     VisaApplicant --> Presentation: Click View and call FindSpecificVisa(id)
 
-    Presentation -> ApiLayer  : call API client to pass FindSpecificVisa data into the Visa Controller 
+    Presentation -> ApiLayer  : [UserRole = "Visa Applicant"] call API client to pass FindSpecificVisa data into the Visa Controller 
     activate ApiLayer  
 
     ApiLayer   -> Application: Handle.FindSpecificVisaService(FindSpecificVisa)
@@ -106,13 +112,18 @@ box "Visa Processing System" #LightBlue
     External --> Infrastructure  : Returns JSON response
     deactivate External
 
-    Infrastructure   --> Application: Map.SpecificVisaDto(Response)
+    Infrastructure   --> Domain: Convert to Visa Object -> Map.Visa(Response)
+    activate Domain
+    Domain --> Infrastructure: pass back visa object
+    deactivate Domain
+    
+    Infrastructure --> Application: Pass back visa object
     deactivate Infrastructure   
 
-    Application --> ApiLayer  : Return DTO
+    Application --> ApiLayer  : Return visa
     deactivate Application
 
-    ApiLayer   --> Presentation: Return 200 with DTO in response Body
+    ApiLayer   --> Presentation: Return 200 with visa in response Body
     deactivate ApiLayer   
 
     Presentation --> VisaApplicant: Renders Specific Visa Overview
