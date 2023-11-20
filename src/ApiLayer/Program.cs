@@ -1,6 +1,7 @@
 using ApplicationLayer.Commands.Application;
 using ApplicationLayer.Commands.Users;
 using ApplicationLayer.Commands.Users.HandlerServices;
+using ApplicationLayer.DTO.Visa.Suggestions;
 using ApplicationLayer.Requests.Users;
 using ApplicationLayer.Requests.Users.HandleServices;
 using DomainLayer.Contracts.Infrastructure;
@@ -109,16 +110,15 @@ builder.Services
     .AddSingleton<ICommandHandler<UserRegistration>, UserRegistrationService>()
     .AddSingleton<ICommandHandler<ApplicationSubmission>, ApplicationSubmissionService>()
     .AddSingleton<IQueryHandler<UserLogin, string>, UserLoginService>()
-    .AddSingleton<IQueryHandler<VisaSuggestion, IVisa>, VisaSuggestionServiceHandler>()
-    .AddSingleton<IQueryHandler<GetCountriesVisas, ICountryVisas>, CountriesVisasServiceHandler>()
-    .AddSingleton<IQueryHandler<GetVisa, IVisa>, VisaServiceHandler>()
+    .AddSingleton<IQueryHandler<VisaSuggestion, VisaDto>, VisaSuggestionServiceHandler>()
+    .AddSingleton<IQueryHandler<GetCountriesVisas, CountryVisaDto>, CountriesVisasServiceHandler>()
+    .AddSingleton<IQueryHandler<GetVisa, VisaDto>, VisaServiceHandler>()
     .AddSingleton<IUserMapper, UserMapper>()
     .AddSingleton<IQueryHandler<ApplicationForVisa, IApplication>, ApplicationForVisaServiceHandler>()
     .AddSingleton<IVisaMapper, VisaMapper>()
     .AddSingleton<IApplicationMapper, ApplicationMapper>()
     .AddSingleton<IVisaIntegrationService, VisaIntegrationService>()
     .AddSingleton<IVisaFactory, VisaFactory>()
-    .AddSingleton<ICountryVisaFactory, CountryVisaFactory>()
     .AddSingleton<IApplicationFactory, ApplicationFactory>()
     .AddSingleton<IUsersRepository, UsersRepository>();
     

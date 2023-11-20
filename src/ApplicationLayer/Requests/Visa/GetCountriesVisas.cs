@@ -14,5 +14,5 @@ namespace ApplicationLayer.Requests.Users
         [Required(ErrorMessage = "Require Destination")]
         string destination,
         [Required(ErrorMessage = "Require Country Of Orgin")]
-        string countryOfOrgin) : IQuery<ICountryVisas>;
+        string countryOfOrgin) : IQuery<CountryVisaDto>;
 }

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DomainLayer.Objects.Visas;
+using ApplicationLayer.DTO.Visa.Suggestions;
 
 namespace ApplicationLayer.Requests.Users
 {
@@ -16,5 +17,5 @@ namespace ApplicationLayer.Requests.Users
         [Required(ErrorMessage = "Reason For Travel")]
         string reason,
         [Required(ErrorMessage = "Require Country Of Orgin")]
-        string countryOfOrgin) : IQuery<IVisa>;
+        string countryOfOrgin) : IQuery<VisaDto>;
 }

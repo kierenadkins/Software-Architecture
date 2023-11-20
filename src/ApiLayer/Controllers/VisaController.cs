@@ -1,5 +1,6 @@
 ﻿using ApplicationLayer.Commands.Application;
 using ApplicationLayer.Commands.Users;
+using ApplicationLayer.DTO.Visa.Suggestions;
 using ApplicationLayer.Requests.Users;
 using DomainLayer.Enums.UserEnum;
 using DomainLayer.Objects.Applications;
@@ -16,20 +17,20 @@ namespace ApiLayer.Controllers
     [ApiController]
     public class VisaController : ControllerBase
     {
-        private readonly IQueryHandler<VisaSuggestion, IVisa> _VisaSuggestion;
-        private readonly IQueryHandler<GetCountriesVisas, ICountryVisas> _CountryVisas;
-        private readonly IQueryHandler<GetVisa, IVisa> _GetVisa;
+        private readonly IQueryHandler<VisaSuggestion, VisaDto> _VisaSuggestion;
+        private readonly IQueryHandler<GetCountriesVisas, CountryVisaDto> _CountryVisas;
+        private readonly IQueryHandler<GetVisa, VisaDto> _GetVisa;
 
-        public VisaController(IQueryHandler<VisaSuggestion, IVisa> visaSuggestion,
-            IQueryHandler<GetCountriesVisas, ICountryVisas> countryVisas,
-            IQueryHandler<GetVisa, IVisa> getVisa)
+        public VisaController(IQueryHandler<VisaSuggestion, VisaDto> visaSuggestion,
+            IQueryHandler<GetCountriesVisas, CountryVisaDto> countryVisas,
+            IQueryHandler<GetVisa, VisaDto> getVisa)
         {
             _VisaSuggestion = visaSuggestion;
             _CountryVisas = countryVisas;
             _GetVisa = getVisa;
         }
 
-        [Authorize(Roles = "VisaApplicant")]
+       // [Authorize(Roles = "VisaApplicant")]
         [HttpPost("suggestion")]
         public async Task<IActionResult> GetSuggestion([FromBody] VisaSuggestion command)
         {

@@ -7,10 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DomainLayer.Objects.Visas;
+using ApplicationLayer.DTO.Visa.Suggestions;
 
 namespace ApplicationLayer.Requests.Users
 {
     public record GetVisa(
         [Required(ErrorMessage = "Requires id")]
-        string id) : IQuery<IVisa>;
+        string id) : IQuery<VisaDto>;
 }

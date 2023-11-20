@@ -1,4 +1,6 @@
-﻿using DomainLayer.Contracts.Infrastructure;
+﻿using ApplicationLayer.DTO.Visa.Suggestions;
+using ApplicationLayer.Extentions;
+using DomainLayer.Contracts.Infrastructure;
 using DomainLayer.Factory.UserFactory;
 using DomainLayer.Objects.Users;
 using DomainLayer.Objects.Visas;
@@ -15,18 +17,15 @@ using System.Threading.Tasks;
 
 namespace ApplicationLayer.Requests.Users.HandleServices
 {
-    public class VisaServiceHandler : IQueryHandler<GetVisa, IVisa>
+    public class VisaServiceHandler : IQueryHandler<GetVisa, VisaDto>
     {
         private readonly IVisaIntegrationService _visaInterationService;
-        private readonly IVisaFactory _visaFactory;
-        public VisaServiceHandler(IVisaIntegrationService visaInterationService,
-            IVisaFactory visaFactory)
+        public VisaServiceHandler(IVisaIntegrationService visaInterationService)
         {
             _visaInterationService = visaInterationService;
-            _visaFactory = visaFactory;
         }
 
-        public async Task<IVisa> HandleAsync(GetVisa query, CancellationToken cancellationToken = default)
+        public async Task<VisaDto> HandleAsync(GetVisa query, CancellationToken cancellationToken = default)
         {
             var visa = await _visaInterationService.GetVisa(query.id);
             
@@ -35,7 +34,9 @@ namespace ApplicationLayer.Requests.Users.HandleServices
                 throw new ArgumentNullException("There was no suggestion found");
             }
 
-            return visa;
+            //more logic could occur here
+
+            return visa.ToVisaDto();
         }
     }
 }
