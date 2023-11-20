@@ -15,11 +15,11 @@ using System.Threading.Tasks;
 
 namespace ApplicationLayer.Requests.Users.HandleServices
 {
-    public class VisaVisaServiceHandler : IQueryHandler<GetVisa, IVisa>
+    public class VisaServiceHandler : IQueryHandler<GetVisa, IVisa>
     {
         private readonly IVisaIntegrationService _visaInterationService;
         private readonly IVisaFactory _visaFactory;
-        public VisaVisaServiceHandler(IVisaIntegrationService visaInterationService,
+        public VisaServiceHandler(IVisaIntegrationService visaInterationService,
             IVisaFactory visaFactory)
         {
             _visaInterationService = visaInterationService;

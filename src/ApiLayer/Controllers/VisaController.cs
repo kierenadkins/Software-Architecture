@@ -1,6 +1,8 @@
-﻿using ApplicationLayer.Commands.Users;
+﻿using ApplicationLayer.Commands.Application;
+using ApplicationLayer.Commands.Users;
 using ApplicationLayer.Requests.Users;
 using DomainLayer.Enums.UserEnum;
+using DomainLayer.Objects.Applications;
 using DomainLayer.Objects.Visas;
 using DomainLayer.ValueObjects.Visa;
 using Microsoft.AspNetCore.Authorization;

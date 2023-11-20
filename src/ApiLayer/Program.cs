@@ -1,11 +1,16 @@
+using ApplicationLayer.Commands.Application;
 using ApplicationLayer.Commands.Users;
 using ApplicationLayer.Commands.Users.HandlerServices;
 using ApplicationLayer.Requests.Users;
 using ApplicationLayer.Requests.Users.HandleServices;
 using DomainLayer.Contracts.Infrastructure;
+using DomainLayer.Factory.ApplicationFactory;
 using DomainLayer.Factory.UserFactory;
+using DomainLayer.Objects.Applications;
 using DomainLayer.Objects.Visas;
+using InfrastructureLayer.Documents.ApplicationDocuments;
 using InfrastructureLayer.Documents.UserDocuments;
+using InfrastructureLayer.Mappers.Applications;
 using InfrastructureLayer.Mappers.Users;
 using InfrastructureLayer.Mappers.Visas;
 using InfrastructureLayer.Repository;
@@ -63,31 +68,23 @@ builder.Services
         options.CosmosConnectionString = "AccountEndpoint=https://kierendatabase.documents.azure.com:443/;AccountKey=ttHoEsXeA3NIfsgGSTwKUTBCoQppAstDYDsYoHjXiolsKf3fxeOYr9zJrlxHVTduXjq2YfsW2CgAACDbyZMi7Q==;";
 
         // Configure the "User" container
-        options.ContainerId = "Users";
         options.ContainerBuilder.Configure<UserDocument>(containerOptions =>
         {
-            containerOptions.WithContainer("User");
+            containerOptions.WithContainer("Users");
             containerOptions.WithPartitionKey("/partitionKey");
         });
-        options.IsAutoResourceCreationIfNotExistsEnabled = true;
-        options.ContainerPerItemType = builder.Configuration.GetValue<bool>("ContainerPerItemType");
-    });
-
-builder.Services
-    .AddCosmosRepository(options =>
-    {
-        options.DatabaseId = "NoSqlDatabase";
-        options.CosmosConnectionString = "AccountEndpoint=https://kierendatabase.documents.azure.com:443/;AccountKey=ttHoEsXeA3NIfsgGSTwKUTBCoQppAstDYDsYoHjXiolsKf3fxeOYr9zJrlxHVTduXjq2YfsW2CgAACDbyZMi7Q==;";
-
-        // Configure the "Visa" container
-        options.ContainerId = "Visa";
         options.ContainerBuilder.Configure<VisaDocument>(containerOptions =>
         {
             containerOptions.WithContainer("Visa");
             containerOptions.WithPartitionKey("/partitionKey");
         });
+        options.ContainerBuilder.Configure<ApplicationDocument>(containerOptions =>
+        {
+            containerOptions.WithContainer("Visa");
+            containerOptions.WithPartitionKey("/partitionKey");
+        });
         options.IsAutoResourceCreationIfNotExistsEnabled = true;
-        options.ContainerPerItemType = builder.Configuration.GetValue<bool>("ContainerPerItemType");
+        options.ContainerPerItemType = true; // builder.Configuration.GetValue<bool>("ContainerPerItemType");
     });
 
 
@@ -110,14 +107,19 @@ builder.Services.AddControllers();
 builder.Services
     .AddSingleton<IUserFactory, UserFactory>()
     .AddSingleton<ICommandHandler<UserRegistration>, UserRegistrationService>()
+    .AddSingleton<ICommandHandler<ApplicationSubmission>, ApplicationSubmissionService>()
     .AddSingleton<IQueryHandler<UserLogin, string>, UserLoginService>()
     .AddSingleton<IQueryHandler<VisaSuggestion, IVisa>, VisaSuggestionServiceHandler>()
     .AddSingleton<IQueryHandler<GetCountriesVisas, ICountryVisas>, CountriesVisasServiceHandler>()
+    .AddSingleton<IQueryHandler<GetVisa, IVisa>, VisaServiceHandler>()
     .AddSingleton<IUserMapper, UserMapper>()
+    .AddSingleton<IQueryHandler<ApplicationForVisa, IApplication>, ApplicationForVisaServiceHandler>()
     .AddSingleton<IVisaMapper, VisaMapper>()
+    .AddSingleton<IApplicationMapper, ApplicationMapper>()
     .AddSingleton<IVisaIntegrationService, VisaIntegrationService>()
     .AddSingleton<IVisaFactory, VisaFactory>()
     .AddSingleton<ICountryVisaFactory, CountryVisaFactory>()
+    .AddSingleton<IApplicationFactory, ApplicationFactory>()
     .AddSingleton<IUsersRepository, UsersRepository>();
     
 

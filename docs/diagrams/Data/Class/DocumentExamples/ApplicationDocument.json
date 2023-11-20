@@ -8,6 +8,7 @@
       "_applicationId": "some_id",
       "userId": "some_user_id",
       "visaId": "some_visa_id",
+      "branchId": "some_branch_id",
       "personaldetails": {
         "questions": [
           {

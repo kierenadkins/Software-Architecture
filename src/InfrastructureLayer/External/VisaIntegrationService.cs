@@ -1,8 +1,11 @@
 ﻿using DomainLayer.Contracts.Infrastructure;
+using DomainLayer.Objects.Applications;
 using DomainLayer.Objects.Users;
 using DomainLayer.Objects.Visas;
 using DomainLayer.ValueObjects.Users;
+using InfrastructureLayer.Documents.ApplicationDocuments;
 using InfrastructureLayer.Documents.UserDocuments;
+using InfrastructureLayer.Mappers.Applications;
 using InfrastructureLayer.Mappers.Users;
 using InfrastructureLayer.Mappers.Visas;
 using Microsoft.Azure.Cosmos;
@@ -25,11 +28,15 @@ namespace InfrastructureLayer.Repository
     public class VisaIntegrationService : IVisaIntegrationService
     {
         private readonly IRepository<VisaDocument> _visaRepo;
+        private readonly IRepository<ApplicationDocument> _applicationRepo;
         private readonly IVisaMapper _visaMapper;
-        public VisaIntegrationService(IRepository<VisaDocument> visaRepo, IVisaMapper visaMapper)
+        private readonly IApplicationMapper _applicationMapper;
+        public VisaIntegrationService(IRepository<VisaDocument> visaRepo, IRepository<ApplicationDocument> applicationRepo, IVisaMapper visaMapper, IApplicationMapper applicationMapper)
         {
             _visaRepo = visaRepo;
+            _applicationRepo = applicationRepo;
             _visaMapper = visaMapper;
+            _applicationMapper = applicationMapper;
         }
 
         public async Task<List<IVisa>?> FindCountriesVisas(string country, string countryOfOrgin)
@@ -75,9 +82,17 @@ namespace InfrastructureLayer.Repository
             return _visaMapper.ToVisaModel(suggestion);
         }
 
-        public async Task SAVE(IVisa visa)
+        public async Task<IApplication?> GetApplication(string visaId)
         {
-            await _visaRepo.CreateAsync(_visaMapper.ToVisaDocument(visa));
+            var application = await _applicationRepo.GetAsync(x => x.VisaId == visaId).FirstOrDefaultAsync();
+
+            if(application is null)
+            {
+                return null;
+            }
+
+            return _applicationMapper.ToApplication(application);
+            
         }
     }
 }

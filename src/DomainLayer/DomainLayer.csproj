@@ -9,7 +9,6 @@
 
   <ItemGroup>
     <Folder Include="Contracts\Applications\" />
-    <Folder Include="Enums\VisaEnum\" />
     <Folder Include="Excepetions\" />
   </ItemGroup>
 

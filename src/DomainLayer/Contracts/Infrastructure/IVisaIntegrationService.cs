@@ -1,4 +1,5 @@
-﻿using DomainLayer.Objects.Users;
+﻿using DomainLayer.Objects.Applications;
+using DomainLayer.Objects.Users;
 using DomainLayer.Objects.Visas;
 using System;
 using System.Collections.Generic;
@@ -13,9 +14,8 @@ namespace DomainLayer.Contracts.Infrastructure
     {
         Task<IVisa?> GetSuggestion(string destination,string reason, string countryOfOrgin);
         Task<List<IVisa>?> FindCountriesVisas (string country, string countryOfOrgin);
-        Task<IVisa> GetVisa(string id);
-
-        Task SAVE(IVisa visa);
+        Task<IVisa?> GetVisa(string id);
+        Task<IApplication?> GetApplication(string visaId);
 
     }
 }

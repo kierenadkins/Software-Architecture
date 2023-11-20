@@ -14,9 +14,14 @@ interface User {
 
     +IsAdmin() : Bool
     +IsBranchManager() : Bool
-    +EncryptPassword() : void
-    +ComparePassword() : Bool
-    -CompareHashedPassword() : Bool
+    +HashPassword() : void
+    +DoesPasswordMatch(string password) : Bool
+    -GenerateSalt() : string
+    -GetHash(string unProtectedPassword, string salt) : byte[]
+    -ProtectPassword() : void
+    -CompareHashedPasswords(userInputPassword, salt) : bool
+    -PasswordSecurity(password) : bool
+
 }
 
 note "Attributes will be their own independant value objects with validation inside" as note_user
