@@ -30,28 +30,28 @@ namespace InfrastructureLayer.Mappers.Users
                 );
 
 
-        public VisaDocumentationRequirementsDocument ToVisaDocumentationRequirementsDocument(IVisaDocumentationRequirements documentation) => new
+        private VisaDocumentationRequirementsDocument ToVisaDocumentationRequirementsDocument(IVisaDocumentationRequirements documentation) => new
             (documentation.Description);
 
-        public VisaDocumentationRequirements ToVisaDocumentationRequirementsModel(VisaDocumentationRequirementsDocument documentation) => new VisaDocumentationRequirements(
+        private VisaDocumentationRequirements ToVisaDocumentationRequirementsModel(VisaDocumentationRequirementsDocument documentation) => new VisaDocumentationRequirements(
             documentation.Description
             );
 
-        public VisaEligibilityRulesDocument ToVisaEligibilityRuleDocument(IVisaEligibilityRules eligibility) =>
+        private VisaEligibilityRulesDocument ToVisaEligibilityRuleDocument(IVisaEligibilityRules eligibility) =>
             new(eligibility.Eligibility, 
                 eligibility.EligibleCountires
                 );
 
-        public VisaEligibilityRules ToVisaEligibilityRuleModel(VisaEligibilityRulesDocument eligibility) => new VisaEligibilityRules(
+        private VisaEligibilityRules ToVisaEligibilityRuleModel(VisaEligibilityRulesDocument eligibility) => new VisaEligibilityRules(
             eligibility.Eligibility,
             eligibility.EligibleCountires);
 
-        public VisaInformationDocument ToVisaInformationDocument(IVisaInformation information) =>
+        private VisaInformationDocument ToVisaInformationDocument(IVisaInformation information) =>
             new(information.Overview,
                 information.ApplicationProccess,
                 information.LengthOfStay);
 
-        public VisaInformation ToVisaInformationModel(VisaInformationDocument information) => new VisaInformation(
+        private VisaInformation ToVisaInformationModel(VisaInformationDocument information) => new VisaInformation(
             information.Overview,
             information.ApplicationProccess,
             information.LengthOfStay

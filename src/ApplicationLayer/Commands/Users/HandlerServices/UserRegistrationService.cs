@@ -2,6 +2,7 @@
 using DomainLayer.Enums.UserEnum;
 using DomainLayer.Factory.UserFactory;
 using DomainLayer.Objects.Users;
+using Shared.Services.Auth.PasswordSecurity;
 using Shared.Services.Commands.Abstract;
 using System;
 using System.Collections.Generic;
@@ -15,88 +16,38 @@ namespace ApplicationLayer.Commands.Users.HandlerServices
     {
         private readonly IUserFactory _userFactory;
         private readonly IUsersRepository _userRepository;
+        private readonly IPasswordProtectionService _passwordProtectionService;
         public UserRegistrationService(IUserFactory userFactory,
-            IUsersRepository userRepository)
+            IUsersRepository userRepository,
+            IPasswordProtectionService passwordProtectionService)
         {
             _userFactory = userFactory;
             _userRepository = userRepository;
+            _passwordProtectionService = passwordProtectionService;
         }
         public async Task HandleAsync(UserRegistration command, CancellationToken cancellationToken = default)
         {
             var (firstName, lastName, email, password, dob, userType, branchid) = command;
             
             if(await _userRepository.ExistsAsync(email))
-           {
-                throw new NotImplementedException("User already exists");
-           }
-
-            IUser user;
-
-            switch(userType)
             {
-                case Roles.VisaApplicant:
-                    user = _userFactory.CreateUserAccount(
-                        Guid.NewGuid().ToString(),
-                        firstName,
-                        lastName,
-                        email,
-                        password,
-                        dob,
-                        userType,
-                        null);
-                    break;
-
-                case Roles.VisaOfficer:
-                    user = _userFactory.CreateUserAccount(
-                        Guid.NewGuid().ToString(),
-                        firstName,
-                        lastName,
-                        email,
-                        password,
-                        dob,
-                        userType,
-                        branchid);
-                    break;
-
-                case Roles.SupportSpecialist:
-                    user = _userFactory.CreateUserAccount(
-                        Guid.NewGuid().ToString(),
-                        firstName,
-                        lastName,
-                        email,
-                        password,
-                        dob,
-                        userType,
-                        branchid);
-                    break;
-
-                case Roles.BranchManager:
-                    user = _userFactory.CreateUserAccount(
-                        Guid.NewGuid().ToString(),
-                        firstName,
-                        lastName,
-                        email,
-                        password,
-                        dob,
-                        userType,
-                        branchid);
-                    break;
-
-                case Roles.Admin:
-                    user = _userFactory.CreateUserAccount(
-                        Guid.NewGuid().ToString(),
-                        firstName,
-                        lastName,
-                        email,
-                        password,
-                        dob,
-                        userType,
-                        null);
-                    break;
-                default: throw new NotImplementedException("User does not exist");
+                throw new NotImplementedException("User already exists");
             }
 
-            user.HashPassword(); 
+            var (passwordEncrypted, salt) = _passwordProtectionService.HashPassword(password);
+
+            IUser user = _userFactory.CreateUserAccount(
+                        Guid.NewGuid().ToString(),
+                        firstName,
+                        lastName,
+                        email,
+                        passwordEncrypted,
+                        salt,
+                        true,
+                        dob,
+                        userType,
+                        branchid);
+
             await _userRepository.AddAsync(user);
         }
     }

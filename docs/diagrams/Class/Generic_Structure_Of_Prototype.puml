@@ -1,0 +1,191 @@
+@startuml
+
+title <size:60> "A Software Architecture Illustrating CQRS, Dependency Injection, and SOLID Principles"
+caption <size:40> A generic overview of the software architecture using CQRS, dependency injection and repository patterns. We use controllers, handlers, services, repositories, mappers and domain models with value objects(a immutable type that can perform its own logic checks. Designed to follow SOILD princaples)
+
+Class Controller{
+    +Get
+    +Post
+    +Put
+}
+
+Interface ICommand{
+}
+
+Interface IQuery{
+}
+
+Interface ICommandHandler{
++HandleAsync(TCommand command, CancellationToken cancellationToken = default)
+}
+
+Interface IQueryHandler{
++HandleAsync(TQuery query, CancellationToken cancellationToken = default) : Task<TResult>
+}
+
+ICommandHandler ..> ICommand: uses
+IQueryHandler ..> IQuery: uses
+
+Class Query {
++string example
++string example
+}
+
+Class Command {
++string example
++string example
+}
+
+ICommand<|-- Command : Extends
+
+IQuery<|-- Query : Extends
+
+Controller ..> ICommandHandler : uses
+
+Controller ..> IQueryHandler : uses
+
+class CommandHandlerService{
++HandleAsync(TCommand command, CancellationToken cancellationToken = default)
+}
+
+class QueryHandlerService{
++HandleAsync(TQuery query, CancellationToken cancellationToken = default) : Task<TResult>
+}
+
+ICommandHandler<|-- CommandHandlerService : Extends
+IQueryHandler<|-- QueryHandlerService : Extends
+
+interface ISomeSharedService{
+    +SomeFunction
+}
+
+class SomeSharedService{
+    +SomeFunction
+}
+
+ISomeSharedService <|-- SomeSharedService : Extends
+CommandHandlerService ..> ISomeSharedService : uses
+QueryHandlerService ..> ISomeSharedService : uses
+
+interface ISomeService{
+    +SomeFunction
+}
+
+class SomeService{
+    +SomeFunction
+    -SomePrivate
+}
+
+ISomeService <|-- SomeService : Extends
+CommandHandlerService ..> ISomeService : uses
+
+
+interface IReadRepository{
+    +get()
+} 
+
+Class ReadRepository{
+    +get()
+} 
+IReadRepository <|-- ReadRepository : Extends
+
+interface IWriteRepository{
+    +Post()
+} 
+
+Class WriteRepository{
+    +Post()
+} 
+IWriteRepository <|-- WriteRepository : Extends
+
+QueryHandlerService ..> IReadRepository : uses
+CommandHandlerService ..> IWriteRepository : uses
+
+class IMapper{
+    +MapToDoc()
+    +MapToModel()
+}
+
+class Mapper{
+    +MapToDoc()
+    +MapToModel()
+}
+
+IMapper <|-- Mapper : Extends
+WriteRepository ..> IMapper : uses
+ReadRepository ..> IMapper : uses
+
+class SomeDomainModelExtentions {
+  + ToDto(someDomainModel: ISomeDomainModel): Dto 
+}
+
+class SomeDomainDto{
+    Id : string
+    Name : string
+    Age : string
+}
+
+SomeDomainModelExtentions ..> SomeDomainDto : Creates Dto
+QueryHandlerService ..> SomeDomainModelExtentions : uses
+
+interface IFactory{
+    CreateModel()
+}
+class Factory{
+    CreateModel()
+}
+IFactory <|-- Factory : Extends
+Mapper ..> IFactory : uses
+CommandHandlerService ..> IFactory : Could use
+
+Interface ISomeDomainModel{
+    Id : DomainId
+    Name : DomainName
+    Age : DomainAge
+}
+
+class SomeDomainModel{
+    Id : DomainId
+    Name : DomainName
+    Age : DomainAge
+    -SomeLogic()
+}
+
+class SomeDomainModel2{
+    Id : DomainId
+    Name : DomainName
+    Age : DomainAge
+    ExampleExtra: string
+    -SomeLogic()
+}
+
+
+'Value Objects
+class DomainId{
+    +Id : guid
+    -SomeLogic()
+}
+
+class DomainName{
+    +Name : string
+    -SomeLogic()
+}
+
+class DomainAge{
+    +Age : int
+    -SomeLogic()
+}
+
+ISomeDomainModel <|-- SomeDomainModel : Extends
+ISomeDomainModel <|-- SomeDomainModel2 : Extends
+Factory ..> ISomeDomainModel : creates
+ISomeDomainModel *-- DomainId : Has-A
+ISomeDomainModel *-- DomainName : Has-A
+ISomeDomainModel *-- DomainAge : Has-A
+
+note "RBAC will be applied on the controller, only allowing certain endpoints to be accessed by certain users" as N1
+note "Authentication And Authoriation is done via internal creation of JWT tokens, which are passed back to frontend, please see Login_And_Register_Class_Diagram" as N2
+
+Controller -- N1
+Controller -- N2
+@enduml

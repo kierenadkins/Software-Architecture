@@ -11,14 +11,18 @@ namespace DomainLayer.Factory.UserFactory
 {
     public class UserFactory : IUserFactory
     {
-        public IUser CreateUserAccount(UserId id, UserFirstName firstName, UserLastName lastName, UserEmail email, UserPassword password, DateOnly dateOnly, Roles role, BranchId? branchId = null)
+        public IUser CreateUserAccount(UserId id, UserFirstName firstName, UserLastName lastName, UserEmail email, UserPassword password, string salt, bool accountActive, DateOnly dateOnly, Roles role, BranchId? branchId = null)
         {
-            return new User(id, firstName, lastName, email, password, dateOnly, role, branchId);
-        }
+            switch (role)
+            {
+                case Roles.VisaApplicant:
+                    return new VisaApplicant(id, firstName, lastName, email, password, salt, accountActive, dateOnly, role);
+                case Roles.VisaOfficer:
+                    return new VisaOfficer(id, firstName, lastName, email, password, salt, accountActive, dateOnly, role, branchId);
+                default: break;
+            }
 
-        public IUser RetrieveUserAccount(UserId id, UserFirstName firstName, UserLastName lastName, UserEmail email, UserPassword password, string salt, bool accountActive, DateOnly dateOnly, Roles role, BranchId? branchId = null)
-        {
-            return new User(id, firstName, lastName, email, password,salt, accountActive, dateOnly, role, branchId);
+            throw new Exception("Invalid User Type");
         }
     }
 }

@@ -1,0 +1,84 @@
+@startuml
+class Application {
+    userId : Guid
+    applicationid : Guid
+    visaId:
+    personaldetails : PersonalDetails
+    traveldetails : TravelDetails
+    documentation : Documentation
+    biometricidentifcation? : BiometricIdentication
+    status : StatusEnum
+    biometricRequired : Bool
+    biometricCompleted? : Bool
+    
+    +IsBiometricCompleted(): Bool
+    +UpdateStatus() : void
+}
+
+class PersonalDetails{
+    Questions : List<Question>
+
+    +ValidateAllAnswered: Bool
+}
+
+class TravelDetails{
+    Questions : List<Question>
+    +ValidateAllAnswered: Bool
+}
+
+class PassportDetails{
+    Questions : List<Question>
+    +ValidateAllAnswered: Bool
+}
+
+class DocumentationDetails{
+    Documentation : List<DocumentationData>
+    +ValidateDocumentationIsSubmitted: Bool
+}
+
+
+class BiometricIdentification{
+
+}
+
+class AdditionalInformation {
+
+}
+
+class Question{
+    Question : string
+    Type : QuestionType
+    CheckboxOptions? : list<String>
+    SelectOption? : List<string>
+    Answer: string
+}
+
+class DocumentationData{
+    Documnetation : string
+    docName: string
+    docData: Byte[] 
+
+    +SaveDoc(docname, docpath)
+}
+
+enum QuestionType{
+    Field
+    CheckBox
+    Select
+    FileUpload
+}
+
+Application "1" *-- "1" PersonalDetails: Has
+Application "1" *-- "1" TravelDetails: Has
+Application "1" *-- "1" PassportDetails: Has
+Application "1" *-- "1" DocumentationDetails: Has
+Application "1" *-- "1" BiometricIdentification: May Have (OUT OF SCOPE FOR PROTOTYPE)
+Application "1" *-- "1" AdditionalInformation: May Have (OUT OF SCOPE FOR PROTOTYPE)
+
+PersonalDetails "1" *-- "*" Question
+TravelDetails "1" *-- "*" Question
+PassportDetails "1" *-- "*" Question
+DocumentationDetails "1" *-- "*" DocumentationData
+
+Question --|> QuestionType: Uses 
+@enduml

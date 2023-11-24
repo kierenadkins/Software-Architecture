@@ -32,7 +32,7 @@ namespace InfrastructureLayer.Mappers.Users
                 user.BranchId?.Value.ToString()
             );
 
-        public IUser ToUserModel(UserDocument userModel) => _userFactory.RetrieveUserAccount
+        public IUser ToUserModel(UserDocument userModel) => _userFactory.CreateUserAccount
             (
             userModel.Id,
             userModel.FirstName,
@@ -43,7 +43,7 @@ namespace InfrastructureLayer.Mappers.Users
             userModel.AccountActive,
             userModel.Dob,
             userModel.Role,
-            userModel.BranchId
+            userModel.BranchId ?? null
             );
 
 

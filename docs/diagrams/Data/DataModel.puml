@@ -1,7 +1,9 @@
 @startuml
-title <size:60> "Class Diagram"
-caption <size:40> "Reduced scope model of the visa application system for the prototype, this does not include value objects, DTOs or Document classes. This can be used as the data model as we will map classes that are "
-interface User {
+title <size:60> "Data Model"
+caption <size:40> "Data"
+
+package DatabasePersistence #GreenYellow/LightGoldenRodYellow {
+class User {
     -Id: guid
     -firstName: string
     -lastName: string
@@ -11,64 +13,12 @@ interface User {
     -dob : Date
     -accountActive: Bool
     -role : RoleEnum
-
-    +IsAdmin() : Bool
-    +IsBranchManager() : Bool
-    +HashPassword() : void
-    +DoesPasswordMatch(string password) : Bool
-    -GenerateSalt() : string
-    -GetHash(string unProtectedPassword, string salt) : byte[]
-    -ProtectPassword() : void
-    -CompareHashedPasswords(userInputPassword, salt) : bool
-    -PasswordSecurity(password) : bool
-
 }
+
 
 note "Attributes will be their own independant value objects with validation inside" as note_user
 note_user --> User: Note for User
 
-note "For the purpose of the diagram we have seperate role classes that inherit from the interface, however it will simply be a user class that inherits from it, the general strucutre of this will be mapped 1-1 into a document for persistence" as note_user2
-note_user2 --> User: Note for User
-
-
-
-enum RoleEnum {
-    VisaApplicant
-    VisaAgent
-    SupportSpecialist
-    BranchManager
-    Admin
-}        
-
-class VisaApplicant {
-    applicantId: Guidit
-}
-
-class VisaAgent {
-    agentId: Guid
-    branchId: Guid
-}
-
-class SupportSpecialist {
-    specialistId: Guid
-    branchId: Guid
-}
-
-class BranchManager {
-    managerId: Guid
-    branchId: Guid
-}
-
-class Admin {
-    adminId: Guid
-}
-
-VisaApplicant ..|> User
-VisaAgent ..|> User
-SupportSpecialist ..|> User
-BranchManager ..|> User
-Admin ..|> User
-User ..|> RoleEnum
 
 
 class Application {
@@ -82,9 +32,6 @@ class Application {
     status : StatusEnum
     biometricRequired : Bool
     biometricCompleted? : Bool
-    
-    +IsBiometricCompleted(): Bool
-    +UpdateStatus() : void
 }
 
 class PersonalDetails{
@@ -129,8 +76,6 @@ class DocumentationData{
     Documnetation : string
     docName: string
     docData: Byte[] 
-
-    +SaveDoc(docname, docpath)
 }
 
 enum QuestionType{
@@ -152,10 +97,11 @@ TravelDetails "1" *-- "*" Question
 PassportDetails "1" *-- "*" Question
 DocumentationDetails "1" *-- "*" DocumentationData
 
-Question --|> QuestionType: Uses 
+Question "1" *-- "1"  QuestionType: Uses 
 
 note "This class will be mapped 1 to 1 to a document for persistence in the database" as note_Application
 note_Application --> Application
+}
 
 Class Visa {
  visaId : Guid
@@ -186,21 +132,8 @@ Visa *-- VisaEligibilityRules: Contains
 Visa *-- VisaDocumentationRequirements: Contains
 
 
-class CountriesVisas{
-    Visas : list<Visa>
-
-    +GetVisaId()
-}
-
- Visa "*" o-- CountriesVisas: Contains
-
-'Class Association
-VisaApplicant --> Application : "submits"
-VisaApplicant --> Visa : "Get Visa Suggestion"
-VisaApplicant --> CountriesVisas : "Get countires visas"
-
-
 note "These classes are not intended for database and functions as a model object for representation from the external system" as note_Visas
 note_Visas -- Visa
-note_Visas -- CountriesVisas
 @enduml
+
+note "seperate into package to show that visas are xternal"

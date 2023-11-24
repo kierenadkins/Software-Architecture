@@ -11,16 +11,7 @@ namespace DomainLayer.Factory.UserFactory
 {
     public interface IUserFactory
     {
-        IUser CreateUserAccount(UserId id,
-            UserFirstName firstName,
-            UserLastName lastName,
-            UserEmail email,
-            UserPassword password,
-            DateOnly dateOnly,
-            Roles role,
-            BranchId? branchId = null);
-
-        IUser RetrieveUserAccount(
+        IUser CreateUserAccount(
             UserId id,
             UserFirstName firstName,
             UserLastName lastName,

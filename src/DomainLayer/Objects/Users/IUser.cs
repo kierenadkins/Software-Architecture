@@ -20,13 +20,6 @@ namespace DomainLayer.Objects.Users
         bool AccountActive { get; }
         Roles UserLevel { get; init; }
 
-        BranchId BranchId { get; init; }
-
-        bool IsAdmin();
-        bool IsBranchManager();
-
-        void HashPassword();
-
-        bool DoesPasswordMatch(string enteredPassword);
+        BranchId? BranchId { get; init; }
     }
 }

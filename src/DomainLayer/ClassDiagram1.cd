@@ -8,14 +8,6 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="DomainLayer.Objects.Visas.CountryVisas">
-    <Position X="0.5" Y="4" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAACAA=</HashCode>
-      <FileName>Objects\Visas\CountryVisa.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" />
-  </Class>
   <Class Name="DomainLayer.Objects.Visas.Visa">
     <Position X="0.5" Y="0.75" Width="1.5" />
     <TypeIdentifier>

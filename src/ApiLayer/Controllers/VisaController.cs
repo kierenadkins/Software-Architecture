@@ -30,7 +30,7 @@ namespace ApiLayer.Controllers
             _GetVisa = getVisa;
         }
 
-       // [Authorize(Roles = "VisaApplicant")]
+        [Authorize(Roles = "VisaApplicant")]
         [HttpPost("suggestion")]
         public async Task<IActionResult> GetSuggestion([FromBody] VisaSuggestion command)
         {

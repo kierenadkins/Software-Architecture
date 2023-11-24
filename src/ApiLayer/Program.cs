@@ -4,6 +4,8 @@ using ApplicationLayer.Commands.Users.HandlerServices;
 using ApplicationLayer.DTO.Visa.Suggestions;
 using ApplicationLayer.Requests.Users;
 using ApplicationLayer.Requests.Users.HandleServices;
+using ApplicationLayer.Services.Jwt;
+using DomainLayer.Contracts.Applications;
 using DomainLayer.Contracts.Infrastructure;
 using DomainLayer.Factory.ApplicationFactory;
 using DomainLayer.Factory.UserFactory;
@@ -19,6 +21,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Shared.Services.Auth.PasswordSecurity;
 using Shared.Services.Commands.Abstract;
 using Shared.Services.Queries.Abstract;
 using System.Security.Claims;
@@ -107,6 +110,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddControllers();
 builder.Services
     .AddSingleton<IUserFactory, UserFactory>()
+    .AddSingleton<IPasswordProtectionService, PasswordProtectionService>()
+    .AddSingleton<IJwtGeneration, JwtGeneration>()
     .AddSingleton<ICommandHandler<UserRegistration>, UserRegistrationService>()
     .AddSingleton<ICommandHandler<ApplicationSubmission>, ApplicationSubmissionService>()
     .AddSingleton<IQueryHandler<UserLogin, string>, UserLoginService>()

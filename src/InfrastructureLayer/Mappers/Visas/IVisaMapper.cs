@@ -13,15 +13,8 @@ namespace InfrastructureLayer.Mappers.Visas
     {
         //To Model
         IVisa ToVisaModel(VisaDocument visaDoc);
-        VisaDocumentationRequirements ToVisaDocumentationRequirementsModel(VisaDocumentationRequirementsDocument documentation);
-        VisaEligibilityRules ToVisaEligibilityRuleModel(VisaEligibilityRulesDocument eligibility);
-        VisaInformation ToVisaInformationModel(VisaInformationDocument information);
 
         //There could be a point where we may want to store suggestions in the system so people can review them later, so i have left these in
         VisaDocument ToVisaDocument(IVisa visa);
-        VisaDocumentationRequirementsDocument ToVisaDocumentationRequirementsDocument(IVisaDocumentationRequirements documentation);
-        VisaEligibilityRulesDocument ToVisaEligibilityRuleDocument(IVisaEligibilityRules eligibility);
-        VisaInformationDocument ToVisaInformationDocument(IVisaInformation information);
-
     }
 }

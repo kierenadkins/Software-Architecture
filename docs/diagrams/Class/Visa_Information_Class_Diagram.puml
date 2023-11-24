@@ -1,0 +1,264 @@
+@startuml
+
+title <size:60> "Visa suggestions and infromation from external system"
+caption <size:40> "The diagram shows how we will use cqrs to interact with the external system, to get visa information.
+class VisaController {
+  + GetSuggestion(VisaSuggestion Query): Task<IActionResult>
+  + GetCountryVisas(GetCountriesVisas Query): Task<IActionResult>
+  + GetVisa(GetVisa Query): Task<IActionResult>
+}
+
+
+Class GetVisa{
++string id
+}
+
+Class VisaSuggestion{
++string destination
++string reason
++string countryOfOrgin
+}
+
+Class GetCountryVisa{
++string destination
++string countryOfOrgin
+}
+
+Interface IQuery{
+}
+
+IQuery<|-- GetVisa: Extends
+IQuery<|-- VisaSuggestion: Extends
+IQuery<|-- GetCountryVisa: Extends
+
+Interface IQueryHandler{
++HandleAsync(TQuery query, CancellationToken cancellationToken = default) : Task<TResult>
+}
+
+Class CountryVisasServiceHandler{
++HandleAsync(GetVisa request, CancellationToken cancellationToken = default) : CountryVisaDto
+}
+
+Class GetVisaServiceHandler{
++HandleAsync(VisaSuggestion request, CancellationToken cancellationToken = default) : VisaDto
+}
+
+Class VisaSuggestionServiceHandler{
++HandleAsync(GetCountryVisa request, CancellationToken cancellationToken = default) : VisaDto
+}
+
+IQueryHandler <|-- CountryVisasServiceHandler: Extends
+IQueryHandler <|-- GetVisaServiceHandler: Extends
+IQueryHandler <|-- VisaSuggestionServiceHandler: Extends
+IQueryHandler ..> IQuery: uses
+
+class VisaDocument {
+        +Id: string
+        +Title: string
+        +Information: VisaInformationDocument
+        +ElgibilityRules: VisaEligibilityRulesDocument
+        +DocumentationRequirements: VisaDocumentationRequirementsDocument
+        +Country: string
+        +VisaType: string
+        +Purpose: string
+    }
+
+ class VisaDocumentationRequirementsDocument {
+        +Description: string
+    }
+
+class VisaEligibilityRulesDocument {
+        +Eligibility: string
+        +EligibleCountires: List<string>
+    }
+
+ class VisaInformationDocument {
+        +Overview: string
+        +ApplicationProccess: string
+        +LengthOfStay: string
+}
+
+VisaDocument *-- VisaDocumentationRequirementsDocument : Has a
+VisaDocument *-- VisaEligibilityRulesDocument : Has a
+VisaDocument *-- VisaInformationDocument : Has a
+
+interface IVisaMapper {
+        +ToVisaModel(visaDoc: VisaDocument): IVisa
+    }
+
+class VisaMapper {
+        +ToVisaModel(visaDoc VisaDocument): IVisa
+        -ToVisaDocumentationRequirementsModel(documentation: VisaDocumentationRequirementsDocument): VisaDocumentationRequirements
+        -ToVisaEligibilityRuleModel(eligibility: VisaEligibilityRulesDocument): VisaEligibilityRules
+        -ToVisaInformationModel(information: VisaInformationDocument): VisaInformation
+    }
+IVisaMapper <|-- VisaMapper : Extends
+
+interface IVisaIntegrationService {
+    +GetSuggestion(destination: string, reason: string, countryOfOrgin: string): Task<IVisa?>
+    +FindCountriesVisas(country: string, countryOfOrgin: string): Task<List<IVisa>?>
+    +GetVisa(id: string): Task<IVisa?>
+    +GetApplication(visaId: string): Task<IApplication?> "Wont be used here"
+}
+
+class VisaIntegrationService {
+    +GetSuggestion(destination: string, reason: string, countryOfOrgin: string): Task<IVisa?>
+    +FindCountriesVisas(country: string, countryOfOrgin: string): Task<List<IVisa>?>
+    +GetVisa(id: string): Task<IVisa?>
+    +GetApplication(visaId: string): Task<IApplication?> "Wont be used here"
+}
+
+IVisaIntegrationService <|-- VisaIntegrationService : Extends
+CountryVisasServiceHandler ..> IVisaIntegrationService : Uses
+GetVisaServiceHandler ..> IVisaIntegrationService : Uses
+VisaSuggestionServiceHandler ..> IVisaIntegrationService : Uses
+VisaMapper -- VisaDocument: Comes from "External System"
+
+interface IVisaFactory {
+  +CreateVisa(id: VisaId, title: VisaTitle, information: VisaInformation, eligibilityRules: VisaEligibilityRules, documentation: VisaDocumentationRequirements, country: VisaCountry, type: VisaType, purpose: VisaPurpose): IVisa
+}
+
+class VisaFactory {
+  +CreateVisa(id: VisaId, title: VisaTitle, information: VisaInformation, eligibilityRules: VisaEligibilityRules, documentation: VisaDocumentationRequirements, country: VisaCountry, type: VisaType, purpose: VisaPurpose): IVisa
+}
+IVisaFactory <|-- VisaFactory : Extends
+VisaMapper ..> IVisaFactory: Uses
+
+interface IVisa {
+  + VisaId: Id
+  + VisaTitle: Title
+  + VisaInformation: Information
+  + VisaEligibilityRules: EligibilityRules
+  + VisaDocumentationRequirements: DocumentationRequirements
+  + VisaCountry: Country
+  + VisaType: Type
+  + VisaPurpose: Purpose
+}
+
+interface IVisaDocumentationRequirements{
+    + Description: string
+}
+
+  interface IVisaEligibilityRules {
+    + Eligibility: string
+    + EligibleCountries: List<string>
+}
+
+interface IVisaInformation {
+    + Overview: string
+    + ApplicationProcess: string
+    + LengthOfStay: string
+}
+
+class Visa {
+  + VisaId: Id
+  + VisaTitle: Title
+  + VisaInformation: Information
+  + VisaEligibilityRules: EligibilityRules
+  + VisaDocumentationRequirements: DocumentationRequirements
+  + VisaCountry: Country
+  + VisaType: Type
+  + VisaPurpose: Purpose
+}
+
+class VisaDocumentationRequirements{
+    + Description: string
+  }
+
+class VisaEligibilityRules {
+    + Eligibility: string
+    + EligibleCountries: List<string>
+  }
+
+class VisaInformation {
+    + Overview: string
+    + ApplicationProcess: string
+    + LengthOfStay: string
+  }
+
+class VisaCountry{
+    + Value : string
+    -ValidCountry : bool
+}
+
+class VisaId{
+    + Value : guid
+    -ValidId : bool
+}
+
+class VisaPurpose{
+    + Value : string
+    -ValidPurpose : bool
+}
+
+class VisaTitle{
+    + Value : string
+    -ValidTitle : bool
+}
+
+class VisaType{
+    + Value : string
+    -ValidType : bool
+}
+
+IVisa <|-- Visa : Extends
+IVisaDocumentationRequirements <|-- VisaDocumentationRequirements : Extends
+IVisaEligibilityRules <|-- VisaEligibilityRules : Extends
+IVisaInformation <|-- VisaInformation : Extends
+IVisa *-- IVisaDocumentationRequirements : Has a
+IVisa *-- IVisaEligibilityRules : Has a
+IVisa *-- IVisaInformation : Has a
+'Value Objects
+IVisa *-- VisaCountry : Has-A
+IVisa *-- VisaId : Has-A
+IVisa *-- VisaPurpose : Has-A
+IVisa *-- VisaTitle : Has-A
+IVisa *-- VisaType : Has-A
+IVisaFactory ..> IVisa: Creates
+
+class VisaExtentions {
+  + ToVisaDto(visa: IVisa): VisaDto
+  - ToVisaSummaryDto(visa: IVisa): VisaSummaryDto
+  + ToCountryVisaDto(visas: List<IVisa>): CountryVisaDto
+}
+
+class VisaDto {
+    - Id: Guid
+    - Title: string
+    - Information: VisaInformationDto
+    - ElgibilityRules: VisaEligibilityRulesDto
+    - DocumentationRequirements: VisaDocumentationRequirementsDto
+    - Country: string
+    - Type: string
+    - Purpose: string
+}
+
+class VisaEligibilityRulesDto {
+    - Eligibility: string
+    - EligibleCountires: List<string>
+}
+
+class VisaInformationDto {
+    - Overview: string
+    - ApplicationProccess: string
+    - LengthOfStay: string
+  }
+
+ class VisaDocumentationRequirementsDto {
+    - Description: string
+  }
+
+VisaExtentions ..> VisaDto: Creates
+VisaDto *-- VisaEligibilityRulesDto : Has-A
+VisaDto *-- VisaInformationDto : Has-A
+VisaDto *-- VisaDocumentationRequirementsDto : Has-A
+
+CountryVisasServiceHandler ..> VisaExtentions: Uses
+GetVisaServiceHandler ..> VisaExtentions: Uses
+VisaSuggestionServiceHandler ..> VisaExtentions: Uses
+VisaIntegrationService ..> IVisaMapper: Uses
+VisaController ..> IQueryHandler: uses
+
+note "This will be mocked in the prototype but would normally act as a middle point between the application and the external system" as N1
+VisaIntegrationService -- N1
+@enduml

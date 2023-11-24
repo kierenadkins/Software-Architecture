@@ -1,0 +1,204 @@
+@startuml
+
+title <size:60> "Class Diagram showing how data is stored into the database using a simple class"
+caption <size:40> "This diagram aims to show a highlevel view of how data will be translated from model to document classes for persistence, this strucutre will be followed with every model"
+'Please refer to other more detailed class diagrams within the class folder
+
+Interface IUser{
++UserId id
++UserFirstName firstName,
++UserLastName lastName,
++UserEmail email,
++UserPassword password,
++bool accountActive,
++DateOnly dob,
++Roles role,
+}
+
+class UserId{
++guid id
+
+-IsValidId(): bool
+}
+
+class UserFirstName{
++string firstName
+-IsValidFirstName(): bool
+}
+
+class UserLastName{
++string lastName
+
+-IsValidLastName(): bool
+}
+
+class UserEmail{
++string userEmail
+
+-IsValidUserEmail(): bool
+}
+
+class UserPassword{
++string password
++string salt
+
+-IsValidPasswordEmail(): bool
+-IsHashed(): bool
+}
+
+class BranchId{
++guid id
+
+-IsValidBranchId(): bool
+}
+
+enum Roles{
+VisaApplicant
+VisaOfficer
+SupportSpecialist
+BranchManager
+Admin
+}
+
+
+IUser *-- UserId : Has-A
+IUser *-- UserFirstName : Has-A
+IUser *-- UserLastName : Has-A
+IUser *-- UserEmail : Has-A
+IUser *-- UserPassword : Has-A
+IUser *-- Roles : Has-A
+
+class VisaApplicant <<Entity>>{
+
+}
+
+class VisaOfficer <<Entity>>{
++BranchId id
+}
+
+class SupportSpecialist <<Entity>>{
++BranchId id
+}
+
+class BranchManager <<Entity>>{
++BranchId id
+}
+
+class Admin <<Entity>>{
+}
+
+VisaOfficer*-- BranchId : Has-A
+SupportSpecialist*-- BranchId : Has-A
+BranchManager*-- BranchId : Has-A
+
+IUser <|-- VisaApplicant : Extends
+IUser <|-- VisaOfficer : Extends
+IUser <|-- SupportSpecialist : Extends
+IUser <|-- BranchManager : Extends
+IUser <|-- Admin : Extends
+
+Interface IUserFactory{
+ +CreateUser(UserId id UserFirstName firstName UserLastName lastName UserEmail email UserPassword password string salt, bool accountActive DateOnly dateOnly Roles role BranchId? branchId = null) : IUser
+}
+
+class UserFactory{
+ +CreateUser(UserId id UserFirstName firstName UserLastName lastName UserEmail email UserPassword password string salt, bool accountActive DateOnly dateOnly Roles role BranchId? branchId = null) : IUser
+}
+
+IUserFactory <|-- UserFactory : Extends
+
+IUserFactory ..> IUser: Creates
+
+interface IUserMapper{
+    +ToUserDocument(IUser user) : UserDocument
+    +ToUserModel (UserDocument doc) : IUser
+}
+
+class UserMapper{
+    -IUserFactory Factory
+    +ToUserDocument(IUser user) : UserDocument
+    +ToUserModel (UserDocument doc) : IUser
+}
+
+Class UserDocument{
++id : string
++firstName : string
++lastName : string
++email : string
++password : string
++accountActive : bool
++dob : string
++role : Roles    
+}
+
+IUserMapper <|-- UserMapper : Extends
+UserMapper ..> IUserFactory: Uses
+UserMapper ..> UserDocument: Creates
+
+interface IUsersWriteRepository{
++AddAsync(IUser user) : void
+}
+
+class UsersWriteRepository{
++AddAsync(IUser user) : void
+}
+
+interface IUsersReadRepository{
++GetAsync(string email): IUser? 
++ExistsAsync(string email): bool
+}
+
+class UsersReadRepository{
++GetAsync(string email): IUser? 
++ExistsAsync(string email): bool
+}
+
+IUsersWriteRepository <|-- UsersWriteRepository : Extends
+IUsersReadRepository <|-- UsersReadRepository : Extends
+UsersWriteRepository ..> UserMapper: Converts to documents
+UsersReadRepository ..> UserMapper: Converts to models
+
+package NoSQLDatabase {
+   class StoredUserDocument {
+    -Id: guid
+    -firstName: string
+    -lastName: string
+    -email: string
+    -password: string
+    -accountActive: Bool
+    -salt: string
+    -role: int
+    -dob: Date
+    -branchId: string
+    -type: string
+    -_rid: string
+    -_self: string
+    -_etag: string
+    -_attachments: string
+    -_ts: int
+}
+
+class StoredVisaApplication {
+  - _applicationId: String
+  - userId: String
+  - visaId: String
+  - branchId: String
+  - personaldetails_questions: List<Question>
+  - personaldetails_validateAllAnswered: Boolean
+  - traveldetails_questions: List<Question>
+  - traveldetails_validateAllAnswered: Boolean
+  - passportdetails_questions: List<Question>
+  - passportdetails_validateAllAnswered: Boolean
+  - documentationdetails_documentation: List<Documentation>
+  - documentationdetails_validateDocumentationIsSubmitted: Boolean
+  - biometricidentification: Object
+  - status: String
+  - biometricRequired: Boolean
+  - biometricCompleted: Boolean
+}
+
+}
+
+UsersWriteRepository ..> NoSQLDatabase: Writes to db
+UsersReadRepository ..> NoSQLDatabase: Reads from db
+@enduml

@@ -1,0 +1,253 @@
+@startuml
+title <size:60> "Authentication & Authorization Class Diagram"
+caption <size:40> "The diagram shows an authenitcation and authorization class strucutre using CQRS principles. Attempting to adhere to SOILD princables where approaite"
+
+Class AuthController{
++RegisterMember(UserRegistration command) : Task<IActionResult>
++LoginMember(UserLogin Query): Task<IActionResult>
+}
+
+Class UserRegistration {
++string firstname
++string lastName
++string email
++DateOnly date
++Roles usertype
++string? branchId
+}
+
+Class UserLogin {
++string email
++string password
+}
+
+Interface ICommand{
+}
+
+Interface IQuery{
+}
+
+ICommand<|-- UserRegistration : Extends
+
+IQuery<|-- UserLogin : Extends
+
+Interface ICommandHandler{
++HandleAsync(TCommand command, CancellationToken cancellationToken = default)
+}
+
+Interface IQueryHandler{
++HandleAsync(TQuery query, CancellationToken cancellationToken = default) : Task<TResult>
+}
+
+Class UserRegistrationServiceHandler{
++HandleAsync(UserRegistation command, CancellationToken token) : void
+}
+
+Class UserLoginServiceHandler{
++HandleAsync(UserLogin request, CancellationToken cancellationToken = default) : string
+}
+
+ICommandHandler <|-- UserRegistrationServiceHandler : Extends
+IQueryHandler <|-- UserLoginServiceHandler : Extends
+
+interface IUsersWriteRepository{
++AddAsync(IUser user) : void
+}
+
+class UsersWriteRepository{
++AddAsync(IUser user) : void
+}
+
+interface IUsersReadRepository{
++GetAsync(string email): IUser? 
++ExistsAsync(string email): bool
+}
+
+class UsersReadRepository{
++GetAsync(string email): IUser? 
++ExistsAsync(string email): bool
+}
+
+IUsersWriteRepository <|-- UsersWriteRepository : Extends
+IUsersReadRepository <|-- UsersReadRepository : Extends
+
+
+UserRegistrationServiceHandler ..> IUsersWriteRepository : Uses
+UserLoginServiceHandler ..> IUsersReadRepository : Uses
+
+Interface IUser{
++UserId id
++UserFirstName firstName,
++UserLastName lastName,
++UserEmail email,
++UserPassword password,
++bool accountActive,
++DateOnly dob,
++Roles role,
+}
+
+class UserId{
++guid id
+
+-IsValidId(): bool
+}
+
+class UserFirstName{
++string firstName
+-IsValidFirstName(): bool
+}
+
+class UserLastName{
++string lastName
+
+-IsValidLastName(): bool
+}
+
+class UserEmail{
++string userEmail
+
+-IsValidUserEmail(): bool
+}
+
+class UserPassword{
++string password
++string salt
+
+-IsValidPasswordEmail(): bool
+-IsHashed(): bool
+}
+
+class BranchId{
++guid id
+
+-IsValidBranchId(): bool
+}
+
+enum Roles{
+VisaApplicant
+VisaOfficer
+SupportSpecialist
+BranchManager
+Admin
+}
+
+
+IUser *-- UserId : Has-A
+IUser *-- UserFirstName : Has-A
+IUser *-- UserLastName : Has-A
+IUser *-- UserEmail : Has-A
+IUser *-- UserPassword : Has-A
+IUser *-- Roles : Has-A
+
+class VisaApplicant{
+
+}
+
+class VisaOfficer{
++BranchId id
+}
+
+class SupportSpecialist{
++BranchId id
+}
+
+class BranchManager{
++BranchId id
+}
+
+class Admin{
+}
+
+VisaOfficer*-- BranchId : Has-A
+SupportSpecialist*-- BranchId : Has-A
+BranchManager*-- BranchId : Has-A
+
+IUser <|-- VisaApplicant : Extends
+IUser <|-- VisaOfficer : Extends
+IUser <|-- SupportSpecialist : Extends
+IUser <|-- BranchManager : Extends
+IUser <|-- Admin : Extends
+
+interface IPasswordProtectionService{
++HashPassword(string userPassword): string, string
++CompareHashedPasswords(string inputedPassword, string password, string salt): bool
+}
+
+class PasswordProtectionService{
++HashPassword(string userPassword): string, string
++CompareHashedPasswords(string inputedPassword, string password, string salt): boo
+-GetHash(sting unProtectedPassword, string salt) : Byte[]
+-IsPasswordSecure() : bool
+}
+
+IPasswordProtectionService <|-- PasswordProtectionService : Extends
+
+UserRegistrationServiceHandler ..> IPasswordProtectionService: Uses
+UserLoginServiceHandler ..> IPasswordProtectionService: Uses
+
+Interface IUserFactory{
+ +CreateUser(UserId id UserFirstName firstName UserLastName lastName UserEmail email UserPassword password string salt, bool accountActive DateOnly dateOnly Roles role BranchId? branchId = null) : IUser
+}
+
+class UserFactory{
+ +CreateUser(UserId id UserFirstName firstName UserLastName lastName UserEmail email UserPassword password string salt, bool accountActive DateOnly dateOnly Roles role BranchId? branchId = null) : IUser
+}
+
+IUserFactory <|-- UserFactory : Extends
+
+IUserFactory ..> IUser: Creates
+
+UserRegistrationServiceHandler ..> IUserFactory: users
+
+ICommandHandler ..> ICommand: uses
+IQueryHandler ..> IQuery: uses
+
+AuthController ..> ICommandHandler : uses
+AuthController ..> IQueryHandler : uses
+
+class UserDocument{
++string id
++string firstName
++string lastName
++string email
++string password
++string salt
++bool accountActive
++string dob
++Roles role
+}
+
+class IUserMapper{
++ToUserDocument(IUser user) : UserDocument
++ToUserModel(UserDocument userDoc): IUser
+}
+
+class UserMapper{
++ToUserDocument(IUser user) : UserDocument
++ToUserModel(UserDocument userDoc): IUser
+}
+
+IUserMapper <|-- UserMapper : Extends
+
+UsersWriteRepository ..> UserMapper: uses
+UsersReadRepository ..> UserMapper: uses
+
+UserMapper ..> IUserFactory: uses
+UserMapper ..> UserDocument: Creates
+
+interface IJwtGeneration{
++CreateToken(Iuser) : string
+}
+
+class JwtGeneration{
++CreateToken(Iuser) : string
+}
+
+IJwtGeneration <|-- JwtGeneration : Extends
+UserLoginServiceHandler ..> IJwtGeneration : users
+
+note "Seperate Read/Write Repositories which will access the database" as N1
+UsersReadRepository -- N1
+UsersWriteRepository -- N1
+
+@enduml
