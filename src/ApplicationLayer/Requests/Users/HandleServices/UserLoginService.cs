@@ -1,5 +1,6 @@
 ﻿using DomainLayer.Contracts.Applications;
 using DomainLayer.Contracts.Infrastructure;
+using DomainLayer.Excepetions.Users;
 using DomainLayer.Objects.Users;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -17,11 +18,11 @@ namespace ApplicationLayer.Requests.Users.HandleServices
 {
     public class UserLoginService : IQueryHandler<UserLogin, string>
     {
-        private readonly IUsersRepository _userRepository;
+        private readonly IUsersReadRepository _userRepository;
         private readonly IJwtGeneration _jwtGeneration;
         private readonly IPasswordProtectionService _passwordProtectionService;
         public UserLoginService(IJwtGeneration jwtGeneration,
-            IUsersRepository userRepository,
+            IUsersReadRepository userRepository,
             IPasswordProtectionService passwordProtectionService)
         {
             _jwtGeneration = jwtGeneration;
@@ -34,13 +35,13 @@ namespace ApplicationLayer.Requests.Users.HandleServices
             var user = await _userRepository.GetAsync(request.Email);
 
             if (user is null)
-                throw new NotImplementedException();
+                throw new NoUserFoundException(request.Email);
 
             if (user.AccountActive is false)
-                throw new NotImplementedException();
+                throw new UserAccountIsNoLongerActive(request.Email);
 
             if (_passwordProtectionService.CompareHashedPasswords(request.Password, user.Password.Value, user.Salt) is false)
-                throw new NotImplementedException();
+                 throw new UserPasswordDoesNotMatchException();
 
             return _jwtGeneration.CreateToken(user);
         }

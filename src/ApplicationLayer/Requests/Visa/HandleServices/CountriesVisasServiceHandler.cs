@@ -1,5 +1,6 @@
 ﻿using ApplicationLayer.Extentions;
 using DomainLayer.Contracts.Infrastructure;
+using DomainLayer.Excepetions.Users;
 using DomainLayer.Factory.UserFactory;
 using DomainLayer.Objects.Users;
 using DomainLayer.Objects.Visas;
@@ -30,7 +31,7 @@ namespace ApplicationLayer.Requests.Users.HandleServices
 
             if (visas is null)
             {
-                throw new ArgumentNullException("There was no suggestion found");
+               throw new CannotFindCountryVisasException(query.destination); ;
             }
 
             //more logic could occur here

@@ -1,0 +1,157 @@
+@startuml
+title <size:60> "Authentication & Authorization Sequence Diagram"
+caption <size:40> "The sequence diagram shows user registration and login in a Visa Processing System, ensuring secure authentication and authorization processes."
+
+actor "User" as User
+
+box "Visa Processing System" #LightBlue
+    participant "Http Handler" as FrontEnd
+    participant "AuthController" as Controller
+    participant "UserRegistrationServiceHandler" as RegService
+    participant "UserLoginServiceHandler" as LoginService
+    participant "PasswordProtectionService" as PasswordService
+     participant "UsersWriteRepository" as WriteRepository
+    participant "UsersReadRepository" as ReadRepository
+    participant "UserFactory" as UserFactory
+    participant "IJwtGeneration" as JwtGeneration
+    participant "UserMapper" as Mapper
+
+   User -> FrontEnd :Enters Account Details On Frontend
+   activate User
+
+   FrontEnd -> Controller :POST: /users/register
+   activate Controller
+   activate FrontEnd
+
+   group Error
+    Controller --> FrontEnd: 503 (Service Unavailable)
+    end  
+
+    Controller -> RegService : _createAccount.HandleAsync(UserRegistration command)
+    activate RegService
+
+    RegService -> ReadRepository: _UserReadRepository.UserExistsAsync(command.email)
+    activate ReadRepository
+
+    ReadRepository -> database : checks if user email is in the database already
+
+    ReadRepository --> RegService: returns false
+
+    group Information
+    ReadRepository --> RegService: returns true
+    RegService --> Controller: nil
+    Controller --> FrontEnd: 409 (Conflict)
+    end
+
+    deactivate ReadRepository
+
+    RegService -> PasswordProtectionService: _passwordProtectionService.HashPassword(command.password)
+    activate PasswordProtectionService
+
+    PasswordProtectionService --> RegService: Returns PasswordHashed and salt
+    deactivate PasswordProtectionService
+
+    RegService -> UserFactory: _userFactory.createUserAccount(id, command.firstname, command.lastname, command.email, passwordHashed, salt, command.accountactive?, command.dob, command.usertype, command.branchid?)
+    note left: This information is given from the command
+    activate UserFactory
+
+    UserFactory --> RegService: Returns User Object
+    deactivate UserFactory
+
+    RegService -> WriteRepository: _userWriteRepository.AddAsync(user)
+    activate WriteRepository
+
+    WriteRepository -> Mapper : _mapper.ToUserDocument(user)
+    activate Mapper
+
+    Mapper --> WriteRepository : return UserDocument
+    deactivate Mapper
+
+    WriteRepository -> database: saves the document to the database
+
+    WriteRepository --> RegService: nil
+    deactivate WriteRepository
+
+    RegService --> Controller: nil
+    deactivate RegService
+
+    Controller --> FrontEnd: 201(success)
+    deactivate Controller
+
+    FrontEnd --> User: Render Login Page
+    deactivate FrontEnd
+
+   User -> FrontEnd :Enters login Details On Frontend
+   activate User
+   activate FrontEnd
+
+   FrontEnd -> Controller :POST: /users/login
+   activate Controller
+   
+   group Error
+    Controller --> FrontEnd: 503 (Service Unavailable)
+    end 
+
+   Controller -> LoginService : _loginUser.HandleAsync(Login request)
+   activate Controller
+
+   LoginService -> ReadRepository: _userRepository.GetAsync(request.Email)
+   activate ReadRepository
+
+   ReadRepository -> database: gets user with email
+
+   group Information
+    ReadRepository --> LoginService: Does not find user document
+    LoginService --> Controller: return null
+    Controller --> FrontEnd: 404 (Not Found) 
+    FrontEnd --> user: "Displays message informing user that the account with that email doesnt exist"
+    end
+   
+   ReadRepository -> Mapper: _mapper.ToUserModel(user)
+   activate Mapper
+
+   Mapper -> UserFactory: _userFactory.createUserAccount(id, command.firstname, command.lastname, command.email, passwordHashed, salt, command.accountactive?, command.dob, command.usertype, command.branchid?)
+   activate UserFactory
+
+   UserFactory --> Mapper: returns user
+   deactivate UserFactory
+
+   Mapper --> ReadRepository: returns user
+   deactivate Mapper
+
+   ReadRepository --> LoginService: returns user
+   deactivate ReadRepository
+
+   LoginService -> PasswordProtectionService: CompareHashedPasswords(request.Password, user.Password.Value, user.Salt)
+   activate PasswordProtectionService
+
+   group Information
+     PasswordProtectionService --> LoginService: return false
+    LoginService --> Controller: Throw IncorrectPasswordException
+    Controller --> FrontEnd: 401 (Unauthorized)
+    FrontEnd --> user: "Displays message informing user the password does not match"
+    end
+
+   PasswordProtectionService --> LoginService: Returns true
+   deactivate PasswordProtectionService
+
+   LoginService -> JwtGeneration :  _jwtGeneration.CreateToken(user)
+   activate JwtGeneration
+
+   JwtGeneration --> LoginService: return Jwt
+   deactivate JwtGeneration
+
+   LoginService --> Controller: Return Jwt
+   deactivate LoginService
+
+   Controller --> FrontEnd: Return Jwt and authorize
+   deactivate Controller
+
+   FrontEnd --> user: Logs user into the system
+   deactivate FrontEnd
+   deactivate user
+end box
+
+database "NoSqlDatabase" as database
+
+@enduml

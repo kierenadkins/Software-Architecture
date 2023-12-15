@@ -9,7 +9,7 @@
             LengthOfStay = lengthOfStay;
         }
 
-        public string Overview { get; init; }
+        public string Overview { get; init; } 
         public string ApplicationProccess { get; init; }
         public string LengthOfStay { get; init; }
     }

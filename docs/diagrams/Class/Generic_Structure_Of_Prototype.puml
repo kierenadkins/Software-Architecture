@@ -135,7 +135,7 @@ class Factory{
     CreateModel()
 }
 IFactory <|-- Factory : Extends
-Mapper ..> IFactory : uses
+IMapper ..> IFactory : uses
 CommandHandlerService ..> IFactory : Could use
 
 Interface ISomeDomainModel{
@@ -178,7 +178,7 @@ class DomainAge{
 
 ISomeDomainModel <|-- SomeDomainModel : Extends
 ISomeDomainModel <|-- SomeDomainModel2 : Extends
-Factory ..> ISomeDomainModel : creates
+IFactory ..> ISomeDomainModel : creates
 ISomeDomainModel *-- DomainId : Has-A
 ISomeDomainModel *-- DomainName : Has-A
 ISomeDomainModel *-- DomainAge : Has-A

@@ -1,6 +1,6 @@
 ---
-id: {0010}
-date: {13/11/2023}
+id: {0011}
+date: {15/11/2023}
 ---
 # Decision to use JWT for authentication
 
@@ -24,6 +24,10 @@ Chosen option: "JWT, because
 
 quite simply it is the most suitable option for our needs. JWT is stateless authentication and alligns with our scalability requirements. It is widely accepted and is good at representing claims between systems. It is simple and will be easily intergrated into the system. Is it also suitable for the architecture we have chosen
 
+By using JWT we also increase our security of the system not only by having a way to be authenticated and authorised but because "Instead of storing information on the server after authentication, JWT creates a JSON web token and encodes, sterilizes, and adds a signature with a secret key that cannot be tampered with"(Educative, n.d.) meaning that if the token is tampered with by attackers the token is no longer valid enforcing secruity messures.
+
+## Status
+* Approved
 
 ### Consequences
 
@@ -32,3 +36,4 @@ quite simply it is the most suitable option for our needs. JWT is stateless auth
 * bad because if not implemented correctly then there could be securiry concerns
 
 ## More Information
+Educative. (n.d.). Educative Answers - trusted answers to developer questions. https://www.educative.io/answers/why-should-you-use-jwts

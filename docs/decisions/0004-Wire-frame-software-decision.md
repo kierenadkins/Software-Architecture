@@ -2,7 +2,7 @@
 id: {0004}
 date: {20/10/2023}
 ---
-# Decision to use Markdown any decision record
+# Decision Adobe Xd for wireframe creation
 
 ## Context and Problem Statement
 In our software development proccess of planning, i am exploring software to create high-fidelity wireframmes that can serve as a visual guideline of the design and flow of the system. I want to be able to export these wireframes as photos to easily send the wireframe over to clients. while also having the ability to interconnect the wireframs to demostrate how they flow together.
@@ -31,4 +31,8 @@ it offers a user freindly solution which is easy to use and learn while also pro
 * Good, because Adobe Xd libraies can offer us consistency and time efficiency.
 * Bad, as Adobe Xd is in maintenance mode which means its not actively being developed 
 
+## Status
+* Rejected
+
 ## More Information
+This is no longer going to be used going forward. The intial design was developed via adobe XD  

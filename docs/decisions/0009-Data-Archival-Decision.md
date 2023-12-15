@@ -1,5 +1,5 @@
 ---
-id: {0008}
+id: {0009}
 date: {13/11/2023}
 ---
 # Decision to archive data
@@ -38,6 +38,9 @@ with this in mind, our goal is to balanace preserving visa information and perve
 * bad because there may be cases where people may want to view old data.
 
 * bad because 10 years is along time for data to be sat around and not being used.
+
+## Status
+* Pending
 
 ## More Information
 

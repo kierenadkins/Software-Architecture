@@ -1,0 +1,84 @@
+@startuml
+
+title Generic Sequence Diagram for commands given to the server
+caption <size:40> Implemented in dotnet using dependency injection to access the classes)
+
+actor "Visa Applicant" as VisaApplicant
+
+box "Visa Processing System" #LightBlue
+    participant "Http Handler" as frontEnd
+    participant "Controller" as controller
+    participant "CommandHandlerService" as commandHandler
+    participant "SomeService" as service
+    participant "writeRepository" as writeRepository
+    participant "mapper" as mapper
+    participant "document" as object
+    participant "factory" as factory
+    participant "domain object" as object
+
+   frontEnd -> controller  : [UserRole = "generic"] controller(command, cancellationToken)
+   activate controller
+   activate frontEnd  
+
+   group Error
+    controller --> frontEnd: 401 (Unauthorized)
+    end
+
+    group Error
+    controller --> frontEnd: 503 (Service Unavailable)
+    end  
+
+    controller -> commandHandler  : commandHandlerService(command, cancellationToken)
+   activate commandHandler
+
+   group Error
+    commandHandler --> frontEnd: 400 (Bad Request) - if the command does not conform to the command in the backend
+    end  
+
+    commandHandler -> factory : _factory.createObject(prams)
+    activate factory
+
+    factory -> object: new object()
+    activate object
+
+    object --> factory: object
+    deactivate object
+
+    factory --> commandHandler  : objectResult
+    deactivate factory
+
+    commandHandler -> service  : _xService.doSomeLogic("123")
+    activate service
+
+    service --> commandHandler  : result
+    deactivate service
+
+    commandHandler -> writeRepository  : _writeRepository.post(objectResult, CancellationToken)
+    activate writeRepository
+
+    writeRepository -> mapper : _mapper.toDocument(objectResult)
+    activate mapper
+    mapper -> document: new document()
+    activate document
+    document --> mapper: return document
+    deactivate document
+    mapper --> writeRepository : return document
+    deactivate mapper
+
+    writeRepository -> database : _writeRepository.CreateAsync(UserDoc)
+
+    writeRepository --> commandHandler : null
+    deactivate writeRepository
+
+    commandHandler --> controller : null
+    deactivate commandHandler
+
+    controller --> frontEnd : 201(success)
+    deactivate controller
+    deactivate frontEnd
+
+end box
+
+database "NoSqlDatabase" as database
+
+@enduml

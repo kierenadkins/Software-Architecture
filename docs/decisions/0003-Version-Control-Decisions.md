@@ -25,6 +25,8 @@ When working as a team we oftern reqire collaborative software to allow mutiple 
 Chosen option: Github, because
 Github is the most recognizable and is highly regarded by the software community for version control, providing seamless collaboration. Github being user-freindly, having intergrared issue tracking and pull requests with code review functionality makes it a vital choice. This being said we can also have repository rules, assuring that new code changes can not be pushed directly to the master branch, but rather undergo a code review from other developers, safegauding the Mainn branch.
 
+"GitHub's collaboration, code review, merging, and code sharing features make it ideal for bug-free software development. Meanwhile, its resources and community help you whenever you get stuck."(Escafit, 2023)
+
 ### Consequences
 
 * Good, because Github offers collabration to allow multiple team memembers to work on the product at the same time
@@ -34,5 +36,9 @@ Github is the most recognizable and is highly regarded by the software community
 * Bad, because although it is the most widely used version control, someone who has not used git before may have a learning curve
 * Bad, because there may be some privacy concerns involved with hosting the code and data on github even if it may be secure.
 
+## Status
+* Approved
+
 ## More Information
 
+Escafit, H. (2023, July 26). Why should you use GitHub? The Mergify Blog. https://blog.mergify.com/why-should-you-use-github/

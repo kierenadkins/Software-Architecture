@@ -1,19 +1,53 @@
 @startuml
 title <size:60> "Data Model"
-caption <size:40> "Data"
+caption <size:40> "Physical Model for nosql database - Mapped 1 - 1"
 
 package DatabasePersistence #GreenYellow/LightGoldenRodYellow {
-class User {
-    -Id: guid
-    -firstName: string
-    -lastName: string
-    -email: string
-    -encryptedPassword: string
-    -hash: string
-    -dob : Date
-    -accountActive: Bool
-    -role : RoleEnum
+Interface IUser{
++UserId id
++UserFirstName firstName,
++UserLastName lastName,
++UserEmail email,
++UserPassword password,
++bool accountActive,
++DateOnly dob,
++Roles role,
 }
+
+enum Roles{
+VisaApplicant
+VisaOfficer
+SupportSpecialist
+BranchManager
+Admin
+}
+
+IUser *-- Roles : Has-A
+
+class VisaApplicant <<Entity>>{
+
+}
+
+class VisaOfficer <<Entity>>{
++BranchId id
+}
+
+class SupportSpecialist <<Entity>>{
++BranchId id
+}
+
+class BranchManager <<Entity>>{
++BranchId id
+}
+
+class Admin <<Entity>>{
+}
+
+IUser <|-- VisaApplicant : Extends
+IUser <|-- VisaOfficer : Extends
+IUser <|-- SupportSpecialist : Extends
+IUser <|-- BranchManager : Extends
+IUser <|-- Admin : Extends
 
 
 note "Attributes will be their own independant value objects with validation inside" as note_user

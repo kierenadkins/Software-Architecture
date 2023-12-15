@@ -1,3 +1,4 @@
+using ApiLayer.ExceptionHandling;
 using ApplicationLayer.Commands.Application;
 using ApplicationLayer.Commands.Users;
 using ApplicationLayer.Commands.Users.HandlerServices;
@@ -124,8 +125,10 @@ builder.Services
     .AddSingleton<IApplicationMapper, ApplicationMapper>()
     .AddSingleton<IVisaIntegrationService, VisaIntegrationService>()
     .AddSingleton<IVisaFactory, VisaFactory>()
+    .AddSingleton<IExceptionHandler, ExceptionHandler>()
     .AddSingleton<IApplicationFactory, ApplicationFactory>()
-    .AddSingleton<IUsersRepository, UsersRepository>();
+    .AddSingleton<IUsersReadRepository, UsersReadRepository>()
+    .AddSingleton<IUsersWriteRepository, UsersWriteRepository>();
     
 
 

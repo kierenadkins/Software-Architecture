@@ -6,6 +6,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
+using Shared.Services.Auth.Exceptions;
+
 namespace Shared.Services.Auth.PasswordSecurity
 {
     public class PasswordProtectionService : IPasswordProtectionService
@@ -38,7 +40,7 @@ namespace Shared.Services.Auth.PasswordSecurity
             "((?=.*\\d)(?=.*[A-Z])(?=.*[a-z])(?=.*\\W)\\w.{6,18}\\w)");
             if (!PasswordRegex.IsMatch(password))
             {
-                throw new Exception("Password isnt secure enough");
+                throw new PasswordIsNotSecureException();
             };
             return true;
         }
@@ -49,7 +51,7 @@ namespace Shared.Services.Auth.PasswordSecurity
             string randomlyGenerateSalt = GenerateSalt();
             byte[] hashedPassword = GetHash(password, randomlyGenerateSalt);
             string hashedBase64Password = Convert.ToBase64String(hashedPassword);
-            return (randomlyGenerateSalt, hashedBase64Password);
+            return (hashedBase64Password, randomlyGenerateSalt);
         }
     }
 }

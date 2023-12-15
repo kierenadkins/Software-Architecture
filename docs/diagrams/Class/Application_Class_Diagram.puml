@@ -1,4 +1,67 @@
 @startuml
+
+interface IApplication {
+    userId : Guid
+    applicationid : Guid
+    visaId:
+    personaldetails : PersonalDetails
+    traveldetails : TravelDetails
+    documentation : Documentation
+    biometricidentifcation? : BiometricIdentication
+    status : StatusEnum
+    biometricRequired : Bool
+    biometricCompleted? : Bool
+    
+    +IsBiometricCompleted(): Bool
+    +UpdateStatus() : void
+}
+
+interface IPersonalDetails{
+    Questions : List<Question>
+
+    +ValidateAllAnswered: Bool
+}
+
+interface ITravelDetails{
+    Questions : List<Question>
+    +ValidateAllAnswered: Bool
+}
+
+interface IPassportDetails{
+    Questions : List<Question>
+    +ValidateAllAnswered: Bool
+}
+
+interface IDocumentationDetails{
+    Documentation : List<DocumentationData>
+    +ValidateDocumentationIsSubmitted: Bool
+}
+
+
+interface IBiometricIdentification{
+
+}
+
+interface IAdditionalInformation {
+
+}
+
+interface IQuestion{
+    Question : string
+    Type : QuestionType
+    CheckboxOptions? : list<String>
+    SelectOption? : List<string>
+    Answer: string
+}
+
+interface IDocumentationData{
+    Documnetation : string
+    docName: string
+    docData: Byte[] 
+
+    +SaveDoc(docname, docpath)
+}
+
 class Application {
     userId : Guid
     applicationid : Guid
@@ -68,17 +131,204 @@ enum QuestionType{
     FileUpload
 }
 
-Application "1" *-- "1" PersonalDetails: Has
-Application "1" *-- "1" TravelDetails: Has
-Application "1" *-- "1" PassportDetails: Has
-Application "1" *-- "1" DocumentationDetails: Has
-Application "1" *-- "1" BiometricIdentification: May Have (OUT OF SCOPE FOR PROTOTYPE)
-Application "1" *-- "1" AdditionalInformation: May Have (OUT OF SCOPE FOR PROTOTYPE)
+enum Status{
+    Incomplete
+    Pending
+    NeedMoreInformation
+    RequireBiometrics
+    Approved
+    Rejected
+}
 
-PersonalDetails "1" *-- "*" Question
-TravelDetails "1" *-- "*" Question
-PassportDetails "1" *-- "*" Question
-DocumentationDetails "1" *-- "*" DocumentationData
+IApplication <|-- Application : Extends
+IPassportDetails <|-- PassportDetails : Extends
+ITravelDetails <|-- TravelDetails : Extends
+IPersonalDetails <|-- PersonalDetails : Extends
+IDocumentationData <|-- DocumentationData : Extends
+IDocumentationDetails <|-- DocumentationDetails : Extends
+IQuestion <|-- Question : Extends
+IBiometricIdentification <|-- BiometricIdentification : Extends
+IAdditionalInformation <|-- AdditionalInformation : Extends
+Question ..> QuestionType: Uses 
 
-Question --|> QuestionType: Uses 
+
+IApplication *-- IPassportDetails : Has a
+IApplication *-- ITravelDetails : Has a
+IApplication *-- IPersonalDetails : Has a
+IApplication *-- IDocumentationDetails : Has a
+IApplication *-- IBiometricIdentification : Has a
+IApplication *-- IAdditionalInformation : Has a
+IApplication *-- Status : Has a
+
+ITravelDetails *-- IQuestion : has a
+IPassportDetails *-- IQuestion : has a
+IPersonalDetails *-- IQuestion: has a
+IDocumentationDetails *-- IDocumentationData : has a
+
+class ApplicationFactory {
+    +createApplication(userId: Guid, applicationId: Guid, visaId: ?, personalDetails: PersonalDetails, travelDetails: TravelDetails, documentation: Documentation, biometricIdentification: BiometricIdentification, status: StatusEnum, biometricRequired: Bool, biometricCompleted: Bool): IApplication
+}
+
+class PersonalDetailsFactory {
+    +createPersonalDetails(questions: List<Question>): IPersonalDetails
+}
+
+class TravelDetailsFactory {
+    +createTravelDetails(questions: List<Question>): ITravelDetails
+}
+
+class PassportDetailsFactory {
+    +createPassportDetails(questions: List<Question>): IPassportDetails
+}
+
+class DocumentationDetailsFactory {
+    +createDocumentationDetails(documentation: List<DocumentationData>): IDocumentationDetails
+}
+
+class BiometricIdentificationFactory {
+    +createBiometricIdentification(): IBiometricIdentification
+}
+
+class AdditionalInformationFactory {
+    +createAdditionalInformation(): IAdditionalInformation
+}
+
+class QuestionFactory {
+    +createQuestion(question: string, type: QuestionType, checkboxOptions: List<String>, selectOptions: List<String>, answer: string): IQuestion
+}
+
+class DocumentationDataFactory {
+    +createDocumentationData(documentation: string, docName: string, docData: Byte[]): IDocumentationData
+}
+
+interface IApplicationFactory {
+    +createApplication(userId: Guid, applicationId: Guid, visaId: ?, personalDetails: PersonalDetails, travelDetails: TravelDetails, documentation: Documentation, biometricIdentification: BiometricIdentification, status: StatusEnum, biometricRequired: Bool, biometricCompleted: Bool): IApplication
+}
+
+interface IPersonalDetailsFactory {
+    +createPersonalDetails(questions: List<Question>): IPersonalDetails
+}
+
+interface ITravelDetailsFactory {
+    +createTravelDetails(questions: List<Question>): ITravelDetails
+}
+
+interface IPassportDetailsFactory {
+    +createPassportDetails(questions: List<Question>): IPassportDetails
+}
+
+interface IDocumentationDetailsFactory {
+    +createDocumentationDetails(documentation: List<DocumentationData>): IDocumentationDetails
+}
+
+interface IBiometricIdentificationFactory {
+    +createBiometricIdentification(): IBiometricIdentification
+}
+
+interface IAdditionalInformationFactory {
+    +createAdditionalInformation(): IAdditionalInformation
+}
+
+interface IQuestionFactory {
+    +createQuestion(question: string, type: QuestionType, checkboxOptions: List<String>, selectOptions: List<String>, answer: string): IQuestion
+}
+
+interface IDocumentationDataFactory {
+    +createDocumentationData(documentation: string, docName: string, docData: Byte[]): IDocumentationData
+}
+
+IApplicationFactory <|-- ApplicationFactory : Extends
+IPersonalDetailsFactory <|-- PersonalDetailsFactory : Extends
+ITravelDetailsFactory <|-- TravelDetailsFactory : Extends
+IPassportDetailsFactory <|-- PassportDetailsFactory : Extends
+IDocumentationDetailsFactory <|-- DocumentationDetailsFactory : Extends
+IBiometricIdentificationFactory <|-- BiometricIdentificationFactory : Extends
+IAdditionalInformationFactory <|-- AdditionalInformationFactory : Extends
+IQuestionFactory <|-- QuestionFactory : Extends
+IDocumentationDataFactory <|-- DocumentationDataFactory : Extends
+
+IApplicationFactory ..> IApplication : creates
+IPersonalDetailsFactory ..> IPersonalDetails  : creates
+ITravelDetailsFactory ..> ITravelDetails : creates
+IPassportDetailsFactory ..> IPassportDetails : creates
+IDocumentationDetailsFactory ..> IDocumentationDetails  : creates
+IBiometricIdentificationFactory ..> IBiometricIdentification : creates
+IAdditionalInformationFactory ..> IAdditionalInformation  : creates
+IQuestionFactory ..> IQuestion  : creates
+IDocumentationDataFactory ..> IDocumentationData  : creates
+
+interface IApplicationMapper{
++ApplicationDocument ToApplicationDocument(IApplication application);
++IApplication ToApplication(ApplicationDocument application);
+}
+
+class ApplicationMapper {
+  +ToApplicationDocument(IApplication application): ApplicationDocument
+  +ToApplication(ApplicationDocument doc): IApplication
+  -ToPersonalDetailsDocument(IPersonalDetails personalDetails): PersonalDetailsDocument
+  -ToTravelDetailsDocument(ITravelDetails travelDetails): TravelDetailsDocument
+  -ToPassportDetailsDocument(IPassportDetails passportDetails): PassportDetailsDocument
+  -ToDocumentationDocument(IDocumentation documentation): DocumentationDocument
+  -ToIBiometricIdentificationDocument(IBiometricIdentification biometricIdentification): BiometricIdentificationDocument
+  -ToPassportDetails(PassportDetailsDocument passportDetails): PassportDetails
+  -ToPersonalDetails(PersonalDetailsDocument personalDetails): PersonalDetails
+  -ToQuestion(QuestionDocument question): Question
+  -ToTravelDetails(TravelDetailsDocument travelDetails): TravelDetails
+}
+
+IApplicationMapper <|-- ApplicationMapper : Extends
+IApplicationMapper <|-- IApplicationFactory : Extends
+IApplicationMapper ..> IPersonalDetailsFactory: Uses
+IApplicationMapper ..> ITravelDetailsFactory: Uses
+IApplicationMapper ..> IPassportDetailsFactory: Uses
+IApplicationMapper ..> IQuestionFactory: Uses
+IApplicationMapper ..> IDocumentationDetailsFactory: Uses
+IApplicationMapper ..> IDocumentationDataFactory
+IApplicationMapper ..> IBiometricIdentificationFactory: Uses
+IApplicationMapper ..> IAdditionalInformationFactory: Uses
+
+interface IVisaIntegrationService {
+    +GetSuggestion(destination: string, reason: string, countryOfOrgin: string): Task<IVisa?>
+    +FindCountriesVisas(country: string, countryOfOrgin: string): Task<List<IVisa>?>
+    +GetVisa(id: string): Task<IVisa?>
+    +GetApplication(visaId: string): Task<IApplication?> "Wont be used here"
+}
+
+class VisaIntegrationService {
+    +GetSuggestion(destination: string, reason: string, countryOfOrgin: string): Task<IVisa?>
+    +FindCountriesVisas(country: string, countryOfOrgin: string): Task<List<IVisa>?>
+    +GetVisa(id: string): Task<IVisa?>
+    +GetApplication(visaId: string): Task<IApplication?> "Wont be used here"
+}
+
+IVisaIntegrationService <|-- VisaIntegrationService : Extends
+VisaIntegrationService ..> IApplicationMapper : uses
+
+Class ApplicationController{
+    +GetApplication()
+}
+
+Interface IQuery{
+}
+
+Interface IQueryHandler{
++HandleAsync(TQuery query, CancellationToken cancellationToken = default) : Task<TResult>
+}
+
+IQueryHandler ..> IQuery: uses
+
+Class GetApplicationByVisaId {
++string Id
+}
+
+IQuery<|-- GetApplicationByVisaId : Extends
+
+ApplicationController ..> IQueryHandler : uses
+
+class ApplicationForVisaServiceHandler{
++HandleAsync(TQuery query, CancellationToken cancellationToken = default) : Task<ApplicationDto>
+}
+
+IQueryHandler <|-- ApplicationForVisaServiceHandler : Extends
+ApplicationForVisaServiceHandler ..> IVisaIntegrationService : uses
 @enduml

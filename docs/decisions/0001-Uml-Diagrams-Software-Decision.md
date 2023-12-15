@@ -27,9 +27,15 @@ I've also decided to use Draw.io as there has been time during the development w
 ### Consequences
 
 * Good because PlantUML allows me to create diagrams quickly and effectively using text
+* "One of the primary advantages of using PlantUML is its simplicity and efficiency" (PlantUML, n.d.)
 * Good because PlantUML can be read in two ways.
+* Good because between plantUML and draw.io we can create any diagram we may need
 * Bad because although I found plantUml quite easy to pick up,  it did require time to learn the syntax
+* Bad because we are learning to use two diffrent software.
+
+## Status
+* Approved
 
 ## More Information
 
-No additional information for this decision
+PlantUML. (n.d.). Use case Diagram syntax and features. PlantUML.com. https://plantuml.com/use-case-diagram#:~:text=One%20of%20the%20primary%20advantages,also%20ensures%20consistency%20and%20accuracy.

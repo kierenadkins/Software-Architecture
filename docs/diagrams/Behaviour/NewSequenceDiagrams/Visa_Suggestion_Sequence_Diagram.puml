@@ -1,0 +1,80 @@
+@startuml
+title <size:60> "Getting visa suggestions"
+caption <size:40> "The sequence diagram shows how a user will get a suggestion from the system."
+
+actor "Visa Applicant" as User
+
+
+box "Visa Processing System" #LightBlue
+    participant "Http Handler" as FrontEnd
+    participant "VisaController" as Controller
+    participant "VisaSuggestionServiceHandler" as visaSuggestionServiceHandler 
+    participant "VisaInterationService" as visaInterationService 
+    participant "VisaMapper" as visaMapper
+    participant "VisaFactory" as visaFactory
+    participant "VisaExtentions" as visaExtentions
+
+    
+
+   User -> FrontEnd :Enters country of orgin, reason for travel and travelling country
+   activate User
+
+   FrontEnd -> Controller :POST: /visa/suggestion
+   activate Controller
+   activate FrontEnd
+
+   group Error
+    Controller --> FrontEnd: 503 (Service Unavailable)
+    end  
+
+    Controller -> visaSuggestionServiceHandler : _VisaSuggestion.HandleAsync(query);
+    activate visaSuggestionServiceHandler
+
+    visaSuggestionServiceHandler -> visaInterationService: _visaInterationService.GetSuggestion(query.destination, query.reason, query.countryOfOrgin);
+    activate visaInterationService
+
+    visaInterationService -> externalSystem : Calls the external systems api and passes in the data to the system
+    activate externalSystem
+    
+    group Error
+    externalSystem --> visaInterationService: 503 (Service Unavailable)
+
+    externalSystem --> visaInterationService: 404 (Not Found)
+    end  
+
+    externalSystem --> visaInterationService: returns suggestion result.
+    deactivate externalSystem
+
+    visaInterationService -> visaMapper: suggestion.ToVisaDto()
+    activate visaMapper
+
+    visaMapper -> visaFactory: _visaFactory.CreateVisa(visaDoc.Id, visaDoc.Title, ToVisaInformationModel(visaDoc.Information), ToVisaEligibilityRuleModel(visaDoc.ElgibilityRules), ToVisaDocumentationRequirementsModel(visaDoc.DocumentationRequirements), visaDoc.Country, visaDoc.VisaType, visaDoc.Purpose)
+    activate visaFactory
+
+    visaFactory --> visaMapper: returns the visa object
+    deactivate visaFactory
+
+    visaMapper --> visaInterationService: returns the visa object
+    deactivate visaMapper
+
+    visaInterationService --> visaSuggestionServiceHandler: returns the visa object
+    deactivate visaInterationService
+
+    visaSuggestionServiceHandler -> visaExtentions : suggestion.ToVisaDto()
+    activate visaExtentions
+
+    visaExtentions --> visaSuggestionServiceHandler: returns suggestion dto which may include less than the api gives us back
+    deactivate visaExtentions
+
+    visaSuggestionServiceHandler --> Controller: returns dto
+    deactivate visaSuggestionServiceHandler
+
+    Controller --> FrontEnd: returns status ok with visa suggestion in body
+    deactivate Controller
+
+    FrontEnd --> User: displays suggestion on the screen
+end box
+
+participant "Global Visa Hub Service" as externalSystem 
+
+@enduml

@@ -14,7 +14,6 @@ namespace DomainLayer.Factory.UserFactory
             VisaType type,
             VisaPurpose purpose)
         {
-
             return new Visa(id, title, information, eligibilityRules, documentation, country, type, purpose);
         }
     }

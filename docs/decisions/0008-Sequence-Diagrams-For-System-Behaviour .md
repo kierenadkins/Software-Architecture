@@ -1,5 +1,5 @@
 ---
-id: {0006}
+id: {0008}
 date: {11/05/2023}
 ---
 
@@ -31,6 +31,9 @@ They are well suited for modeling the interaction between different components o
 * Good because it shows a clear visualization of system behavior helping other developers/stakeholders understand system behavior better
 * Good because the diagram will aid in the development of the level 3 C4 diagram
 * Bad because they focus more on technical details, so may not be suited for people with less technical skills
+
+## Status
+* Approved
 
 ## More Information
 

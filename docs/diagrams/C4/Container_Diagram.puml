@@ -17,9 +17,8 @@ Person(supportSpecialist, Support Specialist, "A AFS employee who handles custom
 Person(branchManager, Branch Manager, "A AFS employee who has control over a local branch and the customer support working at the branch. With the ability to add visa processors")
 Person(admin, Admin, "A AFS employee who has control over user privileges and data - adding more branches and branch managers to the system")
 
-System_Ext(globalVisaDataHubSystem, "Global Visa Data Hub System", "An external system that manages visa information from various countries. Providing real-time updates and handling visa applications to relevant countries")
+System_Ext(globalVisaDataHubSystem, "Global Visa Data Hub System", "An external system that manages visa information from various countries. Providing real-time updates and handling visa applications to relevant countries while also being able to see the status of applications")
 System_Ext(AzureMonitor, "Azure Monitor", "Will collect the logging that is done throughout the program at various steps, this will help including monitor and improve performance, reliability, scalability, and maintainability. This will also help us address non-repudiation as we will have a log of user activeites" )
-System_Ext(AKS, "Azure Kubernetes Service", "Will deploy, scale and manage the frontend and backend containers to ensure high availability, scalbility and will intergrate with azure monitor" )
     
 System_Boundary(c1, "Visa Application System") {
     Container(frontend, "Responsive Frontend", "Blazor WebAssembly", "Delivers a low-latency and responsive experience for web and mobile users by running c# directly to the browser. Functioning even when there is no internet connection or under unreliable networks  ")
@@ -31,14 +30,12 @@ System_Boundary(c1, "Visa Application System") {
     ContainerDb(applicationContainer, "ApplicationContainer", , "Data specific to application", $tags = "noSqlContainer")
 }
 
-Rel_D(anonymousUser, AKS, "Signs up/ logins to the system")
-Rel_D(visaApplicant, AKS, "Requests visa suggestions, Finds & Views visa information, Create, View, Save & Resume visa applications, Schedule and view biometric appointments, Create and View Support Tickets")
-Rel_D(visaOfficer, AKS, "Reviews and validates visa applications, Requests Further Information For Applications, Manages Visa Applicant Appointments Assists with providing Biometric identification, Creates And Views Support Tickets")
-Rel_D(supportSpecialist, AKS, "Reviews and Replies To Support Tickets")
-Rel_D(branchManager, AKS, "Manages Branch Employees(VisaProcessors & SupportSpecialists), Assign Appointments To Visa Processors")
-Rel_D(admin, AKS, "Manages Branches, Manages Branch Management")
-
-Rel_D(AKS, frontend, "AKS load balancer will distribute incoming traffic among instantances of the system")
+Rel_D(anonymousUser, frontend, "Signs up/ logins to the system")
+Rel_D(visaApplicant, frontend, "Requests visa suggestions, Finds & Views visa information, Create, View, Save & Resume visa applications, Schedule and view biometric appointments, Create and View Support Tickets")
+Rel_D(visaOfficer, frontend, "Reviews and validates visa applications, Requests Further Information For Applications, Manages Visa Applicant Appointments Assists with providing Biometric identification, Creates And Views Support Tickets")
+Rel_D(supportSpecialist, frontend, "Reviews and Replies To Support Tickets")
+Rel_D(branchManager, frontend, "Manages Branch Employees(VisaProcessors & SupportSpecialists), Assign Appointments To Visa Processors")
+Rel_D(admin, frontend, "Manages Branches, Manages Branch Management")
 
 
 Rel_L(backend, cosmos_db, "Gets and stores user accounts, visa applications, branch data, and meeting schedules")
@@ -50,7 +47,7 @@ Rel_D(cosmos_db, userContainer ,"holds user data and credentials")
 Rel_D(cosmos_db, branchContainer ,"holds branch data")
 Rel_D(cosmos_db, appointmentContainer , "holds appointment data")
 Rel_D(cosmos_db, applicationContainer , "holds application data")
-
+note left of "c1" : The architecture style of the application will follow a layered approach which will be shown further within the level 3, where will will further break down the frontend and backend to show layers and arhcitecture patterns.  
 note left of "frontend" : The Frontend solves many of the non-functional/usability requirements that are required. Blazor applications are have high performance due to reduced latency issues and can work offline by using browser cache, it is highly scalable to handle additional users and offers support of creating accessiblity requirements. Accessibility requirements will be added in this container such as Accessible language (UP002), Colour-Blind Friendly (UP003), OpenDyslxia (UP006) And text-to-speach (UP007) which are some that have been identified.  
 note left of "backend" : The Backend aims to solve the functional requirements while also addressing the non-functional requirements. The functional requirements will be distributed accross distrint layers, with business logic encapsulated with usecases and entities. Clean architecture with its separation of concerns will help enhance security, CQRS can help support scalability by being able to scale each part and with well designed Rest-Apis this should contribute to performance. Security will include RBAC, the use of JWT and Hashing this can all be seen within the level 3 diagram
 note right of "cosmos_db" : You can find more information relating the decision to use cosmos_db in /docs/decisions/0006-NoSql-For-Data-Storage, i would also like that Azure cosmos Db will take a full backup of our data every 4 hours incase of coruption or loss of data

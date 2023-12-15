@@ -8,12 +8,8 @@ using System.Threading.Tasks;
 
 namespace DomainLayer.Contracts.Infrastructure
 {
-    public interface IUsersRepository
+    public interface IUsersWriteRepository
     {
         Task AddAsync(IUser user);
-        //Task UpdateAsync(IUser user);
-        Task<IUser?> GetAsync(string email);
-        Task<bool> ExistsAsync(string email);
-
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DomainLayer.Excepetions.Users;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace DomainLayer.ValueObjects.Users
         {
             if (password.Length < 6)
             {
-                //throw new InvalidUserPasswordException();
+                throw new UnsecurePasswordException();
             }
 
             Value = password;

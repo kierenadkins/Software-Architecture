@@ -6,6 +6,7 @@ using DomainLayer.Factory.ApplicationFactory;
 using DomainLayer.Factory.UserFactory;
 using DomainLayer.Objects.Applications;
 using DomainLayer.Objects.Users;
+using DomainLayer.Objects.Visas;
 using Shared.Services.Commands.Abstract;
 using Shared.Services.Queries.Abstract;
 using System;

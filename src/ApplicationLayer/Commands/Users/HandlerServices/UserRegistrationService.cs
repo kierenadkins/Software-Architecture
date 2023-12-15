@@ -1,5 +1,6 @@
 ﻿using DomainLayer.Contracts.Infrastructure;
 using DomainLayer.Enums.UserEnum;
+using DomainLayer.Excepetions.Users;
 using DomainLayer.Factory.UserFactory;
 using DomainLayer.Objects.Users;
 using Shared.Services.Auth.PasswordSecurity;
@@ -15,23 +16,26 @@ namespace ApplicationLayer.Commands.Users.HandlerServices
     public class UserRegistrationService : ICommandHandler<UserRegistration>
     {
         private readonly IUserFactory _userFactory;
-        private readonly IUsersRepository _userRepository;
+        private readonly IUsersReadRepository _userReadRepository;
+        private readonly IUsersWriteRepository _userWriteRepository;
         private readonly IPasswordProtectionService _passwordProtectionService;
         public UserRegistrationService(IUserFactory userFactory,
-            IUsersRepository userRepository,
+            IUsersWriteRepository userWriteRepository,
+             IUsersReadRepository userReadRepository,
             IPasswordProtectionService passwordProtectionService)
         {
             _userFactory = userFactory;
-            _userRepository = userRepository;
+            _userWriteRepository = userWriteRepository;
+            _userReadRepository = userReadRepository;
             _passwordProtectionService = passwordProtectionService;
         }
         public async Task HandleAsync(UserRegistration command, CancellationToken cancellationToken = default)
         {
             var (firstName, lastName, email, password, dob, userType, branchid) = command;
             
-            if(await _userRepository.ExistsAsync(email))
+            if(await _userReadRepository.ExistsAsync(email))
             {
-                throw new NotImplementedException("User already exists");
+                throw new UserExistsException(email);
             }
 
             var (passwordEncrypted, salt) = _passwordProtectionService.HashPassword(password);
@@ -48,7 +52,7 @@ namespace ApplicationLayer.Commands.Users.HandlerServices
                         userType,
                         branchid);
 
-            await _userRepository.AddAsync(user);
+            await _userWriteRepository.AddAsync(user);
         }
     }
 }
