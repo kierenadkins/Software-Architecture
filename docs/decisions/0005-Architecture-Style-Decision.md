@@ -23,7 +23,7 @@ I have been tasked with building a visa processing system that will advise, guid
 
 ## Decision Outcome
 
-Chosen option: "Layered", because
+Chosen option: "client-server architecture using a Layered style", because
 For the visa processing system we need to ensure that our non-functional requirements are met. In terms of our backend we want to know that we can scale, have security messures and have good performance. Layered architecture can offer us two out of the three along with many other benefits such as Modularity, flexibility, testability and reusability which is crucial for a complex system that is global.
 
 By splitting our application into layers we are able to follow separation of concerns and divide our functionality accross layers which will help our system be more readable. In terms of our non-functional requirements we are able to quickly add additional logic to the system easily(scalable) but we are also able to actually scale each layer independtly while running for example "The infrastructure layer may be easily scaled horizontally by adding additional instances." (Khan, 2023b)
@@ -32,7 +32,7 @@ Additionally we are able to secure our layers independently by using "multi-laye
 
 This alongside designing each layer to be designed to reduce redundancy and fault tolerance and using load balancers should help us minimize downtime and achieve the non-functional requirement
 
-We will use Rest Apis in the api layer to connect our backend to whatever frontend we want.
+We will use Rest Apis in the api layer to connect our backend to whatever frontend(client) we want.
 
 ### Consequences
 

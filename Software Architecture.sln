@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiLayer", "src\ApiLayer\Ap
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresentationLayer", "src\PresentationLayer\PresentationLayer.csproj", "{C11AD223-D1B3-4E8E-9A81-3F748612D495}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "src\Shared\Shared.csproj", "{465AEAAF-6DCF-43C8-BE2B-E807AF35AEB1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "src\Shared\Shared.csproj", "{465AEAAF-6DCF-43C8-BE2B-E807AF35AEB1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
